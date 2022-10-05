@@ -9,12 +9,14 @@ import ProtectedRoutesLogin from './components/ProtectedRoutesLogin';
 import Signup from './pages/Signup';
 import Sidebar from './components/sidebarDropdown/Sidebar';
 import { Importacion } from './pages/Importacion';
+// import ErrorModal from './components/ErrorModal';
 
 function App() {
 
   return (
     <>
     <Sidebar/>
+
     <div className="App">
       <Routes>
           <Route path='/login' element={<Login/>}/>
@@ -25,6 +27,7 @@ function App() {
           </Route>
         </Routes>
     </div>
+
     </>
   )
 }

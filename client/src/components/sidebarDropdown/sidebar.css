@@ -2,7 +2,7 @@
     background-color: #060b26;
     height: 80px;
     display: flex;
-    justify-content: start;
+    justify-content: space-between;
     align-items: center;
   }
   
@@ -68,6 +68,40 @@
     align-items: center;
   }
   
-  span {
+  /* span {
     margin-left: 16px;
+  } */
+
+  .nav-icon{
+    margin-right: 13px;
+  }
+
+  .sidebar-username{
+    color: #fff;
+    text-transform: capitalize;
+    text-align: center;
+    font-size: 1.4rem;
+    margin-bottom: 1em;
+    font-weight: bold;
+  }
+
+  .item-hidden{
+    display: none;
+  }
+
+  .log-out{
+    display: flex;
+    gap: .8em;
+    margin-right: 2em;
+    cursor: pointer;
+  }
+
+  .log-out__icon{
+    font-size: 1.4rem;
+    color: red !important;
+  }
+
+  .log-out__text{
+    font-size: 1rem;
+    color: #fff !important;
   }

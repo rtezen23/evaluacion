@@ -33,7 +33,7 @@ const login = catchAsync(async (req, res, next) => {
     
     const user = await User.findOne({
         where: {
-            USUARIO: usuario,
+            usuario,
         },
     });
 
@@ -44,11 +44,12 @@ const login = catchAsync(async (req, res, next) => {
     if (!isPasswordValid) return next(new AppError('Invalid password', 400))
 
     const token = await jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
-        expiresIn: 30,
+        expiresIn: '30d',
     });
     
     res.status(200).json({
         status: 'success',
+        user,
         token,
     });
 });

@@ -23,7 +23,7 @@ function Signup() {
       password: '',
     })
 console.log(userData)
-    const API_URL = `${import.meta.env.VITE_API_URL}api/v1/users/signup`;
+    const API_URL = `${import.meta.env.VITE_API_URL}api/v1/users/`;
     
     const navigate = useNavigate();
 

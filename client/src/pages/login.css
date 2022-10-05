@@ -19,7 +19,7 @@
 }
 
 .login-title{
-    color: #645d57;
+    color: #060b26;
     font-size: 5rem;
     display: block;
     margin: auto;
@@ -48,8 +48,8 @@
 }
 
 .login-button {
-  background: #FF4742;
-  border: 1px solid #FF4742;
+  background: #060b26;
+  border: 1px solid #060b26;
   border-radius: 6px;
   box-shadow: rgba(0, 0, 0, 0.1) 1px 2px 4px;
   box-sizing: border-box;
@@ -76,7 +76,7 @@
 .login-button:active {
   background-color: initial;
   background-position: 0 0;
-  color: #FF4742;
+  color: #060b26;
 }
 
 .login-button:active {
