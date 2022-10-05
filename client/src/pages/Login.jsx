@@ -40,8 +40,6 @@ const Login = () => {
         dispatch(login(usuario, password));
     };
 
-    console.log(showError)
-
     const handleMessage = () => {
         // setShowMessage(false);
         navigate('/');

@@ -19,6 +19,8 @@ export const FichaEvaluacion = () => {
   const [tab, setTab] = useState('apertura')
 
   const isAuth = useSelector(state => state.user.isAuth);
+  const registers = useSelector(state => state.registers.registers);
+  const user = useSelector(state => state.user.user);
   const navigate =  useNavigate();
 
   // //FECHA
@@ -32,6 +34,7 @@ export const FichaEvaluacion = () => {
   //CRONOMETRO
 	const [segundos, setSegundos] = useState(0);
 	const [minutos, setMinutos] = useState(0);
+	const [assigned, setAssigned] = useState([]);
   const [showSubmit, setShowSubmit] = useState(false);
 	// const [horas, setHoras] = useState(0);
 
@@ -52,6 +55,11 @@ export const FichaEvaluacion = () => {
     }, 1000);
   }
 
+  useEffect( () => {
+    const asignados = registers.filter(register => register.ASESOR === user.usuario);
+    setAssigned(asignados);
+  },[])
+
   // useEffect(() => {
 	// 	if (isAuth) navigate('/');
 	// 	// else dispatch(checkToken());
@@ -61,10 +69,51 @@ export const FichaEvaluacion = () => {
     window.location.reload();
     clearInterval(timer)
   }
+  console.log(assigned)
+
+  
+  const findCarteraName = (cartera) => {
+    let nombre = '';
+
+    switch (cartera){
+      case 'CAR028': nombre = 'FC VIGENTE(121-MAS)'; break;
+      case 'CAR029': nombre = 'FC CASTIGO'; break;
+      case 'CAR060': nombre = 'FC CAMPO(61-120)'; break;
+      case 'CAR061': nombre = 'FC VIGENTE(1-30)'; break;
+      case 'CAR085': nombre = 'FC VIGENTE PREVENTIVO'; break;
+      case 'CAR070': nombre = 'FC VIGENTE(31-60)'; break;
+      case 'CAR038': nombre = 'FC JUDICIAL CASTIGO'; break;
+      case 'CAR039': nombre = 'FC JUDICIAL VIGENTE'; break;
+      case 'CAR062': nombre = 'FINANCIERA EFECTIVA'; break;
+      case 'CAR080': nombre = 'BANBIF VIGENTE'; break;
+      case 'CAR111': nombre = 'BANBIF CASTIGO'; break;
+      case 'CAR112': nombre = 'BANBIF PREVENTIVA'; break;
+      case 'CAR065': nombre = 'FINANCIERA EFECTIVA VIGENTE'; break;
+      case 'CAR068': nombre = 'FINANCIERA EFECTIVA VENCIDO'; break;
+      case 'CAR069': nombre = 'FINANCIERA EFECTIVA PREVENTIVA'; break;
+      case 'CAR107': nombre = 'FINANCIERA EFECTIVA TRAMO-5'; break;
+      case 'CAR114': nombre = 'BANCO FALABELLA CASTIGO'; break;
+      case 'CAR115': nombre = 'SANTANDER CONSUMER'; break;
+      case 'CAR117': nombre = 'SANTANDER CONSUMER VIGENTE'; break;
+      case 'CAR122': nombre = 'BANCO PICHINCHA JUDICIAL'; break;
+      case 'CAR123': nombre = 'BANCO PICHINCHA VIGENTE'; break;
+      case 'CAR128': nombre = 'BANCO PICHINCHA VIGENTE REFUERZO'; break;
+      case 'CAR130': nombre = 'BANCO PICHINCHA VIGENTE REFUERZO DINERS'; break;
+      case 'CAR132': nombre = 'BANCO PICHINCHA VIGENTE REFINANCIADO'; break;
+      case 'CAR0126': nombre = 'PROFUTURO'; break;
+      case 'CAR127': nombre = 'AGROBANCO'; break;
+      case 'CAR129': nombre = 'SANTANDER CONSUMER CAPTURA'; break;
+    }
+
+    return nombre;
+
+  }
 
   const handleSubmit = () => {
 
   }
+
+  console.log(assigned?.[assigned.length-2]?.CARTERA)
 
   return (
     <section className='ficha-evaluacion'>
@@ -177,32 +226,32 @@ export const FichaEvaluacion = () => {
         <div className='ficha-modelo__01'>
 
           <h5 className='gray'>CARTERA</h5>
-          <p className='gray'>Caja Minicipal de Ahorro y Crédito de Arequipa S.A</p>
-          <span className='gray'>Castigo-ar</span>
+          <p className='gray'>{findCarteraName(assigned?.[assigned.length-2]?.CARTERA)}</p>
+          <span className='gray'>(Castigo-ar)</span>
 
           <h5>ID GESTION</h5>
-          <p>189189</p>
-          <span>Predictivo</span>
+          <p>0001</p>
+          <span>(Predictivo)</span>
 
           <h5 className='gray'>AGENTE</h5>
-          <p className='span-2 gray'>Minaya Minaya Carol</p>
+          <p className='span-2 gray'>{assigned?.[assigned.length-2]?.GESTOR}</p>
 
           <h5>Cliente</h5>
-          <p>42227883</p>
-          <span>ROJAS HUARANGA JAIME</span>
+          <p>{assigned?.[assigned.length-2]?.IDENTIFICADOR}</p>
+          <span>(ROJAS HUARANGA JAIME)</span>
 
           <h5 className='gray'>REACCIÓN</h5>
           <p className='span-2 gray'>Cliente no desea negociar / Renuente</p>
 
           <h5>TMO</h5>
-          <p>00:00:00:0000000</p>
+          <p>(00:00:00:0000000)</p>
           <div>
             <input type="text" className='tmo-input' placeholder='tmo manual // 03:00'/>
           </div>
 
           <h5 className='gray'>FECHA / NUMERO</h5>
-          <p className='gray'>2022/09/30 14:58:14</p>
-          <p className='gray'>952013362</p>
+          <p className='gray'>{assigned?.[assigned.length-2]?.FECHA}</p>
+          <p className='gray'>{assigned?.[assigned.length-2]?.NUMCONTAC}</p>
 
           <h5>Tipo de Llamada</h5>
           <Select/>
@@ -218,7 +267,7 @@ export const FichaEvaluacion = () => {
           <Select className='gray'/>
 
           <h5>CALIFICACION</h5>
-          <p className='span-2 calificacion-p'>0.00</p>
+          <p className='span-2 calificacion-p'>(0.00)</p>
 
           <h5 className='gray'>AUDIO</h5>
           <div>
