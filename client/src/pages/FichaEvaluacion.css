@@ -114,9 +114,6 @@
     resize: none;
 }
 
-
-
-
 /* RESULTS CONTAINER */
 .ficha-evaluacion__results{
     display: flex;
@@ -240,4 +237,23 @@
     font-size: 1.5rem;
     font-weight: bold;
     text-align: center;
+}
+
+.ficha-modelo__02-textarea{
+    height: 400px;
+    padding: 2em;
+}
+
+.ficha-modelo__porcentaje-number{
+    display: block;
+    font-size: 2.5rem;
+    font-weight: bold;
+    background-color: #1A1A1A;
+    color: #fff;
+    padding: 1em 1.5em;
+    border-radius: 30px;
+    width: fit-content;
+    text-align: center;
+    margin: auto;
+    margin-top: 1em;
 }
