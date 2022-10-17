@@ -42,23 +42,29 @@ export const FichaEvaluacion = () => {
   const [aperturaState11, setAperturaState11] = useState(infoEvaluacionCompleta.apertura.apertura11)
   const [aperturaState12, setAperturaState12] = useState(infoEvaluacionCompleta.apertura.apertura12)
   const [aperturaState13, setAperturaState13] = useState(infoEvaluacionCompleta.apertura.apertura13)
+  const [aperturaPesoTotal, setAperturaPesoTotal] = useState(infoEvaluacionCompleta.apertura.total_peso);
   
   const [indagacionState21, setIndagacionState21] = useState(infoEvaluacionCompleta.indagacion.indagacion21)
   const [indagacionState22, setIndagacionState22] = useState(infoEvaluacionCompleta.indagacion.indagacion22)
   const [indagacionState23, setIndagacionState23] = useState(infoEvaluacionCompleta.indagacion.indagacion23)
+  const [indagacionPesoTotal, setIndagacionPesoTotal] = useState(infoEvaluacionCompleta.indagacion.total_peso);
   
   const [manejoState31, setManejoState31] = useState(infoEvaluacionCompleta.manejo.manejo31)
   const [manejoState32, setManejoState32] = useState(infoEvaluacionCompleta.manejo.manejo32)
+  const [manejoPesoTotal, setManejoPesoTotal] = useState(infoEvaluacionCompleta.manejo.total_peso);
   
   const [cierreState41, setCierreState41] = useState(infoEvaluacionCompleta.cierre.cierre41)
   const [cierreState42, setCierreState42] = useState(infoEvaluacionCompleta.cierre.cierre42)
+  const [cierrePesoTotal, setCierrePesoTotal] = useState(infoEvaluacionCompleta.cierre.total_peso);
   
   const [habilidadesState51, setHabilidadesState51] = useState(infoEvaluacionCompleta.habilidades.habilidades51)
   const [habilidadesState52, setHabilidadesState52] = useState(infoEvaluacionCompleta.habilidades.habilidades52)
   const [habilidadesState53, setHabilidadesState53] = useState(infoEvaluacionCompleta.habilidades.habilidades53)
+  const [habilidadesPesoTotal, setHabilidadesPesoTotal] = useState(infoEvaluacionCompleta.habilidades.total_peso);
   
   const [herramientasState61, setHerramientasState61] = useState(infoEvaluacionCompleta.herramientas.herramientas61)
   const [herramientasState62, setHerramientasState62] = useState(infoEvaluacionCompleta.herramientas.herramientas62)
+  const [herramientasPesoTotal, setHerramientasPesoTotal] = useState(infoEvaluacionCompleta.herramientas.total_peso);
   // const handleTotalPorcentaje = (e, state, setState) => {
   //   console.log(first)
   //   aperturaState.forEach(item => {
@@ -72,19 +78,52 @@ export const FichaEvaluacion = () => {
   //   setPorcentaje( prevPorcentaje => prevPorcentaje +  e.value.peso)
   // }
 
-  const handleTotalPorcentaje = (e, state, setState) => {
-    console.log(e);
-    console.log(state);
-    console.log(setState);
+  const setNewPesos = (e, state, setState, total_peso, set_total_peso) => {
+    // Restar % actual al % total
+    const cumpleItem = state.find(item => item.nombre === 'Sí cumple');
+    console.log(cumpleItem)
+    console.log(total_peso)
+    set_total_peso(prevTotalPeso => prevTotalPeso - cumpleItem.peso);
+    console.log(total_peso)
+
+    console.log(state)
+
+    setState(prevState => {
+      prevState.map(item => {
+        return {...item, peso_percent: item.peso_percent * 100 / total_peso}
+      })
+    });
+
+    console.log(state)
+    console.log(total_peso)
+  }
+
+  const handleTotalPorcentaje = (e, state, setState, total_peso, set_total_peso) => {
+
+    // if (e.value.nombre === 'No aplica') {
+    //   return setNewPesos(e, state, setState, total_peso, set_total_peso);
+    // }
+
+    console.log(state)
+
+    // Recorremos en array de objetos para restar la cantidad si habia un elemento seleccionado antes
     state.forEach(item => {
       if (item.isSelected) {
-        setPorcentaje( prevPorcentaje => prevPorcentaje -item.peso)
+        const pesoDecimal = total_peso * item.peso_percent / 100;
+        const peso = Math.round(pesoDecimal);
+        setPorcentaje( prevPorcentaje => prevPorcentaje - peso);
       }
     })
 
-    setState(prevAperturaState => prevAperturaState.map(item => {return{...item, isSelected: item.nombre === e.value.nombre}}));
+    // Recorremos el arreglo de objetos para asignar el nuevo elemento seleccionado dependiendo de la opcion elegida
+    setState(prevState => prevState.map(item => {return{...item, isSelected: item.nombre === e.value.nombre}}));
 
-    setPorcentaje( prevPorcentaje => prevPorcentaje +  e.value.peso)
+    // Sumamos la cantidad correspondiente del elemento seleccionado al % total
+    setPorcentaje( prevPorcentaje => {
+      const pesoDecimal = total_peso * e.value.peso_percent / 100;
+      const peso = Math.round(pesoDecimal);
+      return prevPorcentaje +  peso
+    })
   }
 
   let timer;
@@ -448,7 +487,7 @@ export const FichaEvaluacion = () => {
         </div> */}
         <div className='ficha-modelo__02-tabs__item'>
             <label htmlFor="saludo">1.1 Saludo</label>
-            <Select  options = {aperturaState11?.map(apertura => ({ label: apertura.nombre, value: apertura }))} onChange={(e) => handleTotalPorcentaje(e, aperturaState11, setAperturaState11)}/>
+            <Select  options = {aperturaState11?.map(apertura => ({ label: apertura.nombre, value: apertura }))} onChange={(e) => handleTotalPorcentaje(e, aperturaState11, setAperturaState11, aperturaPesoTotal, setAperturaPesoTotal)}/>
         </div>
         {/* <div className='ficha-modelo__02-tabs__item'>
             <label htmlFor="contactar_persona">1.2 Contactar con la persona adecuada</label>
@@ -456,7 +495,7 @@ export const FichaEvaluacion = () => {
         </div> */}
         <div className='ficha-modelo__02-tabs__item'>
             <label htmlFor="contactar_persona">1.2 Contactar con la persona adecuada</label>
-            <Select  options = {aperturaState12?.map(apertura => ({ label: apertura.nombre, value: apertura }))} onChange={(e) => handleTotalPorcentaje(e, aperturaState12, setAperturaState12)}/>
+            <Select  options = {aperturaState12?.map(apertura => ({ label: apertura.nombre, value: apertura }))} onChange={(e) => handleTotalPorcentaje(e, aperturaState12, setAperturaState12, aperturaPesoTotal, setAperturaPesoTotal)}/>
         </div>
         {/* <div className='ficha-modelo__02-tabs__item'>
             <label htmlFor="identificacion_gestor">1.3 Identificación del gestor</label>
@@ -464,7 +503,7 @@ export const FichaEvaluacion = () => {
         </div> */}
         <div className='ficha-modelo__02-tabs__item'>
             <label htmlFor="identificacion_gestor">1.3 Identificación del gestor</label>
-            <Select  options = {aperturaState13?.map(apertura => ({ label: apertura.nombre, value: apertura }))} onChange={(e) => handleTotalPorcentaje(e, aperturaState13, setAperturaState13)}/>
+            <Select  options = {aperturaState13?.map(apertura => ({ label: apertura.nombre, value: apertura }))} onChange={(e) => handleTotalPorcentaje(e, aperturaState13, setAperturaState13, aperturaPesoTotal, setAperturaPesoTotal)}/>
         </div>
       </div>
     }
@@ -473,17 +512,17 @@ export const FichaEvaluacion = () => {
               <div className='ficha-modelo__02-tabs__item'>
                   <label htmlFor="brindar_info">2.1 Brindar información de la Situación del Producto</label>
                   {/* <Select options = {indagacion.indagacion1?.map(indagacion => ({ label: indagacion, value: indagacion }))}/> */}
-                  <Select options = {indagacionState21?.map(indagacion => ({ label: indagacion.nombre, value: indagacion }))} onChange={(e) => handleTotalPorcentaje(e, indagacionState21, setIndagacionState21)}/>
+                  <Select options = {indagacionState21?.map(indagacion => ({ label: indagacion.nombre, value: indagacion }))} onChange={(e) => handleTotalPorcentaje(e, indagacionState21, setIndagacionState21, indagacionPesoTotal, setIndagacionPesoTotal)}/>
               </div>
               <div className='ficha-modelo__02-tabs__item'>
                   <label htmlFor="indagar_motivo">2.2 Indagar motivo de No Pago + Sustento de pago</label>
                   {/* <Select options = {indagacion.indagacion2?.map(indagacion => ({ label: indagacion, value: indagacion }))}/> */}
-                  <Select options = {indagacionState22?.map(indagacion => ({ label: indagacion.nombre, value: indagacion }))} onChange={(e) => handleTotalPorcentaje(e, indagacionState22, setIndagacionState22)}/>
+                  <Select options = {indagacionState22?.map(indagacion => ({ label: indagacion.nombre, value: indagacion }))} onChange={(e) => handleTotalPorcentaje(e, indagacionState22, setIndagacionState22, indagacionPesoTotal, setIndagacionPesoTotal)}/>
               </div>
               <div className='ficha-modelo__02-tabs__item'>
                   <label htmlFor="asesorar">2.3 Asesorar</label>
                   {/* <Select options = {indagacion.indagacion3?.map(indagacion => ({ label: indagacion, value: indagacion }))}/> */}
-                  <Select options = {indagacionState23?.map(indagacion => ({ label: indagacion.nombre, value: indagacion }))} onChange={(e) => handleTotalPorcentaje(e, indagacionState23, setIndagacionState23)}/>
+                  <Select options = {indagacionState23?.map(indagacion => ({ label: indagacion.nombre, value: indagacion }))} onChange={(e) => handleTotalPorcentaje(e, indagacionState23, setIndagacionState23, indagacionPesoTotal, setIndagacionPesoTotal)}/>
               </div>
             </div>
     }      
@@ -492,12 +531,12 @@ export const FichaEvaluacion = () => {
               <div className='ficha-modelo__02-tabs__item'>
                   <label htmlFor="saludo">3.1 Mantiene sentido de urgencia</label>
                   {/* <Select options = {manejo.manejo1?.map(manejo => ({ label: manejo, value: manejo }))}/> */}
-                  <Select options = {manejoState31?.map(manejo => ({ label: manejo.nombre, value: manejo }))} onChange={(e) => handleTotalPorcentaje(e, manejoState31, setManejoState31)}/>
+                  <Select options = {manejoState31?.map(manejo => ({ label: manejo.nombre, value: manejo }))} onChange={(e) => handleTotalPorcentaje(e, manejoState31, setManejoState31, manejoPesoTotal, setManejoPesoTotal)}/>
               </div>
               <div className='ficha-modelo__02-tabs__item'>
                   <label htmlFor="contactar_persona">3.2 Perseverancia en el Objetivo/Manejo de Objeciones</label>
                   {/* <Select options = {manejo.manejo2?.map(manejo => ({ label: manejo, value: manejo }))}/> */}
-                  <Select options = {manejoState32?.map(manejo => ({ label: manejo.nombre, value: manejo }))} onChange={(e) => handleTotalPorcentaje(e, manejoState32, setManejoState32)}/>
+                  <Select options = {manejoState32?.map(manejo => ({ label: manejo.nombre, value: manejo }))} onChange={(e) => handleTotalPorcentaje(e, manejoState32, setManejoState32, manejoPesoTotal, setManejoPesoTotal)}/>
               </div>
             </div>
     }            
@@ -506,12 +545,12 @@ export const FichaEvaluacion = () => {
               <div className='ficha-modelo__02-tabs__item'>
                   <label htmlFor="saludo">4.1 Reafirmar acuerdos y próximos pasos (Parafraseo)</label>
                   {/* <Select options = {cierre.cierre1?.map(cierre => ({ label: cierre, value: cierre }))}/> */}
-                  <Select options = {cierreState41?.map(cierre => ({ label: cierre.nombre, value: cierre }))} onChange={(e) => handleTotalPorcentaje(e, cierreState41, setCierreState41)}/>
+                  <Select options = {cierreState41?.map(cierre => ({ label: cierre.nombre, value: cierre }))} onChange={(e) => handleTotalPorcentaje(e, cierreState41, setCierreState41, cierrePesoTotal, setCierrePesoTotal)}/>
               </div>
               <div className='ficha-modelo__02-tabs__item'>
                   <label htmlFor="contactar_persona">4.2 Despedida del Cliente</label>
                   {/* <Select options = {cierre.cierre2?.map(cierre => ({ label: cierre, value: cierre }))}/> */}
-                  <Select options = {cierreState42?.map(cierre => ({ label: cierre.nombre, value: cierre }))} onChange={(e) => handleTotalPorcentaje(e, cierreState42, setCierreState42)}/>
+                  <Select options = {cierreState42?.map(cierre => ({ label: cierre.nombre, value: cierre }))} onChange={(e) => handleTotalPorcentaje(e, cierreState42, setCierreState42, cierrePesoTotal, setCierrePesoTotal)}/>
               </div>
             </div>
     }    
@@ -519,15 +558,15 @@ export const FichaEvaluacion = () => {
             <div>
               <div className='ficha-modelo__02-tabs__item'>
                   <label htmlFor="saludo">5.1 Escucha activa</label>
-                  <Select options = {habilidadesState51?.map(habilidades => ({ label: habilidades.nombre, value: habilidades }))} onChange={(e) => handleTotalPorcentaje(e, habilidadesState51, setHabilidadesState51)}/>
+                  <Select options = {habilidadesState51?.map(habilidades => ({ label: habilidades.nombre, value: habilidades }))} onChange={(e) => handleTotalPorcentaje(e, habilidadesState51, setHabilidadesState51, habilidadesPesoTotal, setHabilidadesPesoTotal)}/>
               </div>
               <div className='ficha-modelo__02-tabs__item'>
                   <label htmlFor="contactar_persona">5.2 Comunicación con el cliente</label>
-                  <Select options = {habilidadesState52?.map(habilidades => ({ label: habilidades.nombre, value: habilidades }))} onChange={(e) => handleTotalPorcentaje(e, habilidadesState52, setHabilidadesState52)}/>
+                  <Select options = {habilidadesState52?.map(habilidades => ({ label: habilidades.nombre, value: habilidades }))} onChange={(e) => handleTotalPorcentaje(e, habilidadesState52, setHabilidadesState52, habilidadesPesoTotal, setHabilidadesPesoTotal)}/>
               </div>
               <div className='ficha-modelo__02-tabs__item'>
                   <label htmlFor="identificacion_gestor">5.3 Amabilidad con el cliente</label>
-                  <Select options = {habilidadesState53?.map(habilidades => ({ label: habilidades.nombre, value: habilidades }))} onChange={(e) => handleTotalPorcentaje(e, habilidadesState53, setHabilidadesState53)}/>
+                  <Select options = {habilidadesState53?.map(habilidades => ({ label: habilidades.nombre, value: habilidades }))} onChange={(e) => handleTotalPorcentaje(e, habilidadesState53, setHabilidadesState53, habilidadesPesoTotal, setHabilidadesPesoTotal)}/>
               </div>
             </div>
     }
@@ -536,11 +575,11 @@ export const FichaEvaluacion = () => {
             <div>
               <div className='ficha-modelo__02-tabs__item'>
                   <label htmlFor="saludo">6.1 Uso de Herramientas de apoyo</label>
-                  <Select options = {herramientasState61?.map(herramientas => ({ label: herramientas.nombre, value: herramientas }))} onChange={(e) => handleTotalPorcentaje(e, herramientasState61, setHerramientasState61)}/>
+                  <Select options = {herramientasState61?.map(herramientas => ({ label: herramientas.nombre, value: herramientas }))} onChange={(e) => handleTotalPorcentaje(e, herramientasState61, setHerramientasState61, herramientasPesoTotal, setHerramientasPesoTotal)}/>
               </div>
               <div className='ficha-modelo__02-tabs__item'>
                   <label htmlFor="contactar_persona">6.2 Registro de gestiones</label>
-                  <Select options = {herramientasState62?.map(herramientas => ({ label: herramientas.nombre, value: herramientas }))} onChange={(e) => handleTotalPorcentaje(e, herramientasState62, setHerramientasState62)}/>
+                  <Select options = {herramientasState62?.map(herramientas => ({ label: herramientas.nombre, value: herramientas }))} onChange={(e) => handleTotalPorcentaje(e, herramientasState62, setHerramientasState62, herramientasPesoTotal, setHerramientasPesoTotal)}/>
               </div>
             </div>
     }
