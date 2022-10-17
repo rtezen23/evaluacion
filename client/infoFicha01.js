@@ -79,7 +79,7 @@ export default {
                 peso_percent: 0
             },
             {
-                nombre: 'Si cumple',
+                nombre: 'Sí cumple',
                 peso: 1,
                 isSelected: false,
                 peso_percent: 33.33

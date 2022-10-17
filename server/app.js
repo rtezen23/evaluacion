@@ -3,6 +3,7 @@ var cors = require('cors');
 const path = require('path');
 
 const { usersRouter } = require('./routes/users.routes');
+const { fichasRouter } = require('./routes/fichas.routes');
 const { viewsRouter } = require('./routes/views.routes');
 
 const app = express();
@@ -18,6 +19,7 @@ process.on('uncaughtException', function (err) {
 }); 
 
 app.use('/api/v1/users', usersRouter);
+app.use('/api/v1/fichas', fichasRouter);
 app.use('/*', viewsRouter);
 
 module.exports = { app };
