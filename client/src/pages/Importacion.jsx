@@ -1,93 +1,150 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import * as XLSX from 'xlsx/xlsx.mjs';
 import './importacion.css';
 import DataTable from 'react-data-table-component';
 import { useDispatch, useSelector } from 'react-redux';
 import {setRegisters} from '../store/actions/registers.actions';
 import {getRegisters} from '../store/actions/registers.actions';
+import axios from 'axios';
 
 const columns = [
 	{
-		name: 'FECHAGEST',
-		selector: row => row.FECHAGEST,
-		grow: 2,
+		name: 'id',
+		selector: row => row.id,
+		wrap: true,
 		center: true
 	},
 	{
-		name: 'HORA GESTIÓN',
-		selector: row => row['HORA GESTIÓN'],
+		name: 'FECHAGEST',
+		wrap: true,
+		selector: row => row.FECHAGEST,
+		center: true
+	},
+	{
+		name: 'id_cartera',
+		wrap: true,
+		selector: row => row.id_cartera,
 	},
 	{
 		name: 'CARTERA',
+		wrap: true,
 		selector: row => row.CARTERA,
 	},
 	{
 		name: 'IDENTIFICADOR',
+		wrap: true,
 		selector: row => row.IDENTIFICADOR,
 	},
 	{
 		name: 'ACCION',
+		wrap: true,
 		selector: row => row.ACCION,
 	},
 	{
 		name: 'EFECTO',
+		wrap: true,
 		selector: row => row.EFECTO,
 	},
 	{
 		name: 'MOTIVO',
+		wrap: true,
 		selector: row => row.MOTIVO,
 	},
 	{
 		name: 'PESO',
+		wrap: true,
 		selector: row => row.PESO,
 	},
 	{
-		name: 'GRUPO',
-		selector: row => row.GRUPO,
+		name: 'HOMOLO',
+		wrap: true,
+		selector: row => row.HOMOLO,
 	},
 	{
 		name: 'CONTACTO',
+		wrap: true,
 		selector: row => row.CONTACTO,
 	},
 	{
-		name: 'OBSERVACION',
-		selector: row => row.OBSERVACION,
+		name: 'OBSERV',
+		grow: 2,
+		wrap: true,
+		selector: row => row.OBSERV,
 	},
 	{
-		name: 'NUMCONTACTO',
-		selector: row => row.NUMCONTACTO,
+		name: 'ID_CONT',
+		wrap: true,
+		selector: row => row.ID_CONT,
 	},
 	{
-		name: 'GESTOR',
-		selector: row => row.GESTOR,
+		name: 'ASESOR',
+		wrap: true,
+		selector: row => row.ASESOR,
 	},
 	{
 		name: 'SUCURSAL',
+		wrap: true,
 		selector: row => row.SUCURSAL,
 	},
 	{
 		name: 'PISOS',
+		wrap: true,
 		selector: row => row.PISOS,
 	},
 	{
+		name: 'PUERTA',
+		wrap: true,
+		selector: row => row.PUERTA,
+	},
+	{
+		name: 'FACHADA',
+		wrap: true,
+		selector: row => row.FACHADA,
+	},
+	{
 		name: 'MONTO',
+		wrap: true,
 		selector: row => row.MONTO,
 	},
 	{
-		name: 'FECHA',
-		selector: row => row.FECHA,
+		name: 'USUARIO',
+		wrap: true,
+		selector: row => row.USUARIO,
 	},
-  {
-		name: 'ASESOR',
-		selector: row => row.ASESOR,
+	{
+		name: 'ficha',
+		wrap: true,
+		selector: row => row.ficha,
+	},
+	{
+		name: 'estado',
+		wrap: true,
+		selector: row => row.estado,
 	},
 ]
+
+const API_URL = `${import.meta.env.VITE_API_URL}api/v1/base/`;
 
 export const Importacion = () => {
 
   // const [registers, setRegisters] = useState([]);
   const dispatch = useDispatch();
-  const registers = useSelector(state => state.registers.registers);
+  const registers = useSelector(state => state.registers.base);
+
+  const [base, setBase] = useState([]);
+  const [isLoading, setisLoading] = useState(false);
+
+  const handleFile = () => {
+	setisLoading(true);
+	axios.post(API_URL, base)
+	.then(res => {
+	  setisLoading(false);
+	  alert('Registros agregados');
+	})
+	.catch(err => {
+		alert('Error al agregar')
+	})
+}
 
   const readExcel = file => {
     const promise = new Promise((resolve, reject) => {
@@ -113,10 +170,13 @@ export const Importacion = () => {
     });
 
     promise.then(data => {
-        console.log(data);
-        dispatch(setRegisters(data));
+        setBase(data);
     })
 };
+
+useEffect(() => {
+	dispatch(getRegisters());
+ }, [])
 
 const paginationOptions = {
   rowsPerPageText: 'Filas por página',
@@ -136,15 +196,18 @@ const paginationOptions = {
             readExcel(file);
         }} />
         </div>
-        {registers.length ? (
+		<div>
+          <button className='importacion__label' onClick={handleFile}>Guardar registros</button>
+        </div>
+        {base.length ? (
           <h3>
-            Total de registros: {registers.length}
+            Total de registros: {base.length}
           </h3>
           ) : ''
         }
         <DataTable
 					columns={columns}
-					data={registers}
+					data={base}
 					pagination
 					paginationComponentOptions={paginationOptions}
 					fixedHeader

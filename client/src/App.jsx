@@ -9,6 +9,7 @@ import ProtectedRoutesLogin from './components/ProtectedRoutesLogin';
 import Signup from './pages/Signup';
 import Sidebar from './components/sidebarDropdown/Sidebar';
 import { Importacion } from './pages/Importacion';
+import { ReporteBase } from './pages/ReporteBase';
 // import ErrorModal from './components/ErrorModal';
 
 function App() {
@@ -20,11 +21,12 @@ function App() {
     <div className="App">
       <Routes>
           <Route path='/login' element={<Login/>}/>
-          {/* <Route element={<ProtectedRoutesLogin/>}> */}
+          <Route element={<ProtectedRoutesLogin/>}>
             <Route path='/' element={<FichaEvaluacion/>}/>
+            <Route path='/base' element={<ReporteBase/>}/>
             <Route path='/importacion' element={<Importacion/>}/>
             <Route path='/signup' element={<Signup/>}/>
-          {/* </Route> */}
+          </Route>
         </Routes>
     </div>
 

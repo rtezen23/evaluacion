@@ -8,11 +8,11 @@ const registersSlice = createSlice({
 	initialState,
 	name: 'registers',
 	reducers: {
+		setRegisters(state, action) {
+			state.registers = action.payload.base;
+		},
 		getRegisters(state, action) {
 			return state.registers;
-		},
-		setRegisters(state, action) {
-			state.registers = action.payload.registers;
 		},
 	},
 });

@@ -10,6 +10,7 @@ import { SidebarData } from './SidebarData';
 import './sidebar.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../../store/actions/user.actions';
+import {HiDocumentText} from 'react-icons/hi';
 
 const Sidebar = () => {
   const [sidebar, setSidebar] = useState(false);
@@ -65,6 +66,12 @@ const Sidebar = () => {
                     <Link to='/importacion'>
                       <BiImport className='nav-icon'/>
                       <span>IMPORTAR</span>
+                    </Link>
+                  </li>
+                  <li className={`nav-text ${user?.cargo !=='admin' ? 'item-hidden' : ''}`}>
+                    <Link to='/base'>
+                      <HiDocumentText className='nav-icon'/>
+                      <span>REPORTE</span>
                     </Link>
                   </li>
                   <li className={`nav-text ${user?.cargo !=='admin' ? 'item-hidden' : ''}`}>

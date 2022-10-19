@@ -3,6 +3,7 @@ const express = require('express');
 const {
 	createFicha,
 	getAllFichas,
+	deleteFicha,
 } = require('../controllers/fichas.controller.js');
 
 const fichasRouter = express.Router();

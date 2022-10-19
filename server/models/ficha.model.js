@@ -115,7 +115,7 @@ const Ficha = db.define('ficha', {
         type: DataTypes.STRING,
         allowNull: true,
     },
-    duracion_monitorio: {
+    duracion_monitoreo: {
         type: DataTypes.STRING,
         allowNull: true,
     },
