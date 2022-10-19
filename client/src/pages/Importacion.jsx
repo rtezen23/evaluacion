@@ -9,21 +9,10 @@ import axios from 'axios';
 
 const columns = [
 	{
-		name: 'id',
-		selector: row => row.id,
-		wrap: true,
-		center: true
-	},
-	{
 		name: 'FECHAGEST',
 		wrap: true,
 		selector: row => row.FECHAGEST,
 		center: true
-	},
-	{
-		name: 'id_cartera',
-		wrap: true,
-		selector: row => row.id_cartera,
 	},
 	{
 		name: 'CARTERA',
@@ -112,14 +101,9 @@ const columns = [
 		selector: row => row.USUARIO,
 	},
 	{
-		name: 'ficha',
+		name: 'FICHA',
 		wrap: true,
-		selector: row => row.ficha,
-	},
-	{
-		name: 'estado',
-		wrap: true,
-		selector: row => row.estado,
+		selector: row => row.FICHA,
 	},
 ]
 

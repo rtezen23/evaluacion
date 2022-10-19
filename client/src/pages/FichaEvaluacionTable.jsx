@@ -187,7 +187,7 @@ export const FichaEvaluacionTable = () => {
         },
         {
             name: 'nombre_monitor',
-            selector: row => <p className='ficha-evaluacion-table__item'>{row.nombre_monitor}</p>,
+            selector: row => <p className='ficha-evaluacion-table__item'>{row.supervisor}</p>,
             sortable: true,
             center: true,
             wrap: true

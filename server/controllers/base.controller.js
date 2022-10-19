@@ -36,7 +36,7 @@ const createBase = catchAsync(async (req, res, next) => {
 const deleteBase = catchAsync(async (req, res, next) => {
 	const { base } = req;
     
-	await base.update({ estado: 'REVISADO' });
+	await base.update({ ESTADO: 'REVISADO' });
 
 	res.status(204).json({ status: 'success' });
 });

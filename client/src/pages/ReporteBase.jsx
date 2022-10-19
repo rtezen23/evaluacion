@@ -11,6 +11,12 @@ export const ReporteBase = () => {
 
     const columns = [
         {
+            name: 'id',
+            wrap: true,
+            selector: row => row.id,
+            center: true
+        },
+        {
             name: 'FECHAGEST',
             wrap: true,
             selector: row => row.FECHAGEST,
@@ -103,28 +109,24 @@ export const ReporteBase = () => {
             selector: row => row.USUARIO,
         },
         {
-            name: 'ficha',
+            name: 'FICHA',
             wrap: true,
-            selector: row => row.ficha,
+            selector: row => row.FICHA,
         },
         {
-            name: 'estado',
+            name: 'ESTADO',
             wrap: true,
-            selector: row => row.estado,
+            selector: row => <p style={{color: `${row.ESTADO === 'REVISADO' ? 'green' : 'blue'}`}}>{row.ESTADO}</p>,
         },
     ]
 
     useEffect(() => {
         axios.get(BASE_URL)
         .then(res => {
-            console.log(res.data)
             setBaseData(res.data.base)
-            console.log(res.data.base)
         })
         .catch(err => console.log(err))
     }, [])
-
-    console.log(baseData)
 
     const paginationOptions = {
         rowsPerPageText: 'Filas por página',

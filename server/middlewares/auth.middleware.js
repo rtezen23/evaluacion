@@ -34,7 +34,7 @@ const protectSession = catchAsync(async (req, res, next) => {
 	// });
 
 	const user = await User.findOne({
-		where: { IDPERSONAL: decoded.id },
+		where: { id: decoded.id },
 	});
 
 	if (!user) {

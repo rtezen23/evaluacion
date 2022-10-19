@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useReducer } from 'react';
 import Select from 'react-select';
 import './FichaEvaluacion.css';
 import './FichaEvaluacion2.css';
@@ -11,6 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { FichaEvaluacionTable } from './FichaEvaluacionTable';
 import { deleteRegister } from '../store/actions/registers.actions';
+import { checkToken } from '../store/actions/user.actions';
 
 const FICHAS_URL = `${import.meta.env.VITE_API_URL}api/v1/fichas/`;
 const BASE_URL = `${import.meta.env.VITE_API_URL}api/v1/base/`;
@@ -31,38 +32,36 @@ export const FichaEvaluacion = () => {
 	const [assigned, setAssigned] = useState([]);
   const [showSubmit, setShowSubmit] = useState(false);
   const [porcentaje, setPorcentaje] = useState(0)
+  const [infoFicha, setInfoFicha] = useState({});
 
   const dispatch = useDispatch();
  
-  // FICHAS
-  const infoFicha = true ? infoFicha01 : infoFicha02;
+  const [aperturaState11, setAperturaState11] = useState([])
+  const [aperturaState12, setAperturaState12] = useState([])
+  const [aperturaState13, setAperturaState13] = useState([])
+  const [aperturaPesoTotal, setAperturaPesoTotal] = useState([]);
 
-  const [aperturaState11, setAperturaState11] = useState(infoFicha.apertura.apertura11)
-  const [aperturaState12, setAperturaState12] = useState(infoFicha.apertura.apertura12)
-  const [aperturaState13, setAperturaState13] = useState(infoFicha.apertura.apertura13)
-  const [aperturaPesoTotal, setAperturaPesoTotal] = useState(infoFicha.apertura.total_peso);
+  const [indagacionState21, setIndagacionState21] = useState([])
+  const [indagacionState22, setIndagacionState22] = useState([])
+  const [indagacionState23, setIndagacionState23] = useState([])
+  const [indagacionPesoTotal, setIndagacionPesoTotal] = useState([]);
   
-  const [indagacionState21, setIndagacionState21] = useState(infoFicha.indagacion.indagacion21)
-  const [indagacionState22, setIndagacionState22] = useState(infoFicha.indagacion.indagacion22)
-  const [indagacionState23, setIndagacionState23] = useState(infoFicha.indagacion.indagacion23)
-  const [indagacionPesoTotal, setIndagacionPesoTotal] = useState(infoFicha.indagacion.total_peso);
+  const [manejoState31, setManejoState31] = useState([])
+  const [manejoState32, setManejoState32] = useState([])
+  const [manejoPesoTotal, setManejoPesoTotal] = useState([]);
   
-  const [manejoState31, setManejoState31] = useState(infoFicha.manejo.manejo31)
-  const [manejoState32, setManejoState32] = useState(infoFicha.manejo.manejo32)
-  const [manejoPesoTotal, setManejoPesoTotal] = useState(infoFicha.manejo.total_peso);
+  const [cierreState41, setCierreState41] = useState([])
+  const [cierreState42, setCierreState42] = useState([])
+  const [cierrePesoTotal, setCierrePesoTotal] = useState([]);
   
-  const [cierreState41, setCierreState41] = useState(infoFicha.cierre.cierre41)
-  const [cierreState42, setCierreState42] = useState(infoFicha.cierre.cierre42)
-  const [cierrePesoTotal, setCierrePesoTotal] = useState(infoFicha.cierre.total_peso);
+  const [habilidadesState51, setHabilidadesState51] = useState([])
+  const [habilidadesState52, setHabilidadesState52] = useState([])
+  const [habilidadesState53, setHabilidadesState53] = useState([])
+  const [habilidadesPesoTotal, setHabilidadesPesoTotal] = useState([]);
   
-  const [habilidadesState51, setHabilidadesState51] = useState(infoFicha.habilidades.habilidades51)
-  const [habilidadesState52, setHabilidadesState52] = useState(infoFicha.habilidades.habilidades52)
-  const [habilidadesState53, setHabilidadesState53] = useState(infoFicha.habilidades.habilidades53)
-  const [habilidadesPesoTotal, setHabilidadesPesoTotal] = useState(infoFicha.habilidades.total_peso);
-  
-  const [herramientasState61, setHerramientasState61] = useState(infoFicha.herramientas.herramientas61)
-  const [herramientasState62, setHerramientasState62] = useState(infoFicha.herramientas.herramientas62)
-  const [herramientasPesoTotal, setHerramientasPesoTotal] = useState(infoFicha.herramientas.total_peso);
+  const [herramientasState61, setHerramientasState61] = useState([])
+  const [herramientasState62, setHerramientasState62] = useState([])
+  const [herramientasPesoTotal, setHerramientasPesoTotal] = useState([]);
 
   const [ fichaDatos, setFichaDatos ] = useState ({
         id_evaluacion: '',
@@ -171,6 +170,30 @@ export const FichaEvaluacion = () => {
   })
   }
 
+  const setInfoData = () => {
+    setAperturaState11(infoFicha.apertura?.apertura11);
+    setAperturaState12(infoFicha.apertura?.apertura12);
+    setAperturaState13(infoFicha.apertura?.apertura13);
+    setAperturaPesoTotal(infoFicha.apertura?.total_peso);
+    setIndagacionState21(infoFicha.indagacion?.indagacion21);
+    setIndagacionState22(infoFicha.indagacion?.indagacion22);
+    setIndagacionState23(infoFicha.indagacion?.indagacion23);
+    setIndagacionPesoTotal(infoFicha.indagacion?.total_peso);
+    setManejoState31(infoFicha.manejo?.manejo31);
+    setManejoState32(infoFicha.manejo?.manejo32);
+    setManejoPesoTotal(infoFicha.manejo?.total_peso);
+    setCierreState41(infoFicha.cierre?.cierre41);
+    setCierreState42(infoFicha.cierre?.cierre42);
+    setCierrePesoTotal(infoFicha.cierre?.total_peso);
+    setHabilidadesState51(infoFicha.habilidades?.habilidades51);
+    setHabilidadesState52(infoFicha.habilidades?.habilidades52);
+    setHabilidadesState53(infoFicha.habilidades?.habilidades53);
+    setHabilidadesPesoTotal(infoFicha.habilidades?.total_peso);
+    setHerramientasState61(infoFicha.herramientas?.herramientas61);
+    setHerramientasState62(infoFicha.herramientas?.herramientas62);
+    setHerramientasPesoTotal(infoFicha.herramientas?.total_peso);
+  }
+
   // useRefs
   const aperturaState11Ref = useRef();
   const aperturaState12Ref = useRef();
@@ -207,39 +230,40 @@ export const FichaEvaluacion = () => {
   }
 
   const [ datosBase, setDatosBase ] = useState([]);
-  const [ datosCarteras, setDatosCarteras ] = useState([]);
   const [ infoCartera, setInfoCartera ] = useState({
     idcartera: '',
     tramo: '',
     cartera: ''
   });
 
+  const [ignored, forceUpdate] = useReducer(x => x + 1, 0);
+
   useEffect( () => {
-    // handleCarteras();
+    // dispatch(checkToken());
     axios.get(BASE_URL)
     .then(res => {
       // REGISTROS TOTALES DE LA IMPORTACION
+      console.log(res.data.base.filter(base => base.USUARIO === user.usuario)[0])
+      // const ficha = res.data.base.filter(base => base.USUARIO === user.usuario)[0].FICHA === '1' ? infoFicha01 : infoFicha02;
+      // setInfoFicha(prevInfoFicha => {return { ...prevInfoFicha, ficha}});
+      setInfoFicha(res.data.base.filter(base => base.USUARIO === user.usuario)[0].FICHA === '1' ? infoFicha01 : infoFicha02);
       setDatosBase(res.data.base);
       // REGISTROS DE LA IMPORTACION QUE CORRESPONDEN AL ASESOR
       setAssigned(res.data.base.filter(base => base.USUARIO === user.usuario))
-
-    axios.get(CARTERAS_URL)
-    .then(res2 => {
-      setDatosCarteras(res2.data.carteras);
-      // handleCarteras(res.data.carteras);
-      setInfoCartera(res2.data.carteras.find( item => item.idcartera === (res.data.base?.filter(base => base.USUARIO === user.usuario)[0]?.CARTERA)));
+      axios.get(CARTERAS_URL)
+      .then(res2 => {
+        // setDatosCarteras(res2.data.carteras);
+        // handleCarteras(res.data.carteras);
+        setInfoCartera(res2.data.carteras.find( item => item.idcartera === (res.data.base.filter(base => base.USUARIO === user.usuario)[0]?.CARTERA)));
+      })
+      .catch(err => console.log(err))
+      
     })
     .catch(err => console.log(err))
-
-    })
-    .catch(err => console.log(err))
-
-    if (!assigned.length) {
-      console.log('No tiene registros asignados');
-    }
-  },[])
-
-  console.log('test')
+   
+    setInfoData();
+    
+  },[ignored])
 
   const handleCancel = () => {
     window.location.reload();
@@ -261,19 +285,19 @@ export const FichaEvaluacion = () => {
     fichaDatos.dni_cliente = assigned[0].IDENTIFICADOR;
     fichaDatos.tmo_segundos = tramoSegundos;
     fichaDatos.fecha_monitoreo = new Date().toLocaleString('es-PE');
-    fichaDatos.nombre_monitor= user.nombres;
+    fichaDatos.supervisor= user.nombres;
     fichaDatos.rol= user.cargo;
 
     axios.post(FICHAS_URL, fichaDatos)
     .then(res => {
       dispatch(deleteRegister(assigned[0]?.id));
-      alert('Ficha agregada');
-      navigate('/');
+      alert('Ficha agregada, vuelva a iniciar sesión para continuar');
+      navigate('/login')
     })
     .catch(err => console.log(err))
   }
 
-    // audio
+  // audio
   const [audioFile, setAudioFile] = useState('')
   const audioRef = useRef(null);
   const handleAudio = e => {
@@ -284,15 +308,15 @@ export const FichaEvaluacion = () => {
     // const resetAudioInput = () => {
     //   audioRef.current.value = null;
     // };
+    
 
   return (
     <section className='ficha-evaluacion'>
       
       <form className='ficha-evaluacion__form' onSubmit={handleSubmit}>
         
-
-        <div className='ficha-modelo__01-main'>
-          <h2 className='ficha-modelo__01-main__title'>FICHA EVALUACIÓN</h2>
+    <div className='ficha-modelo__01-main'>
+          <h2 className='ficha-modelo__01-main__title'>EVALUACIÓN FICHA {assigned[0]?.FICHA}</h2>
           <p className='ficha-modelo__01-main__time'>
                 {/* {horas < 10 ? '0' + horas : horas}: */}
                 {minutos < 10 ? '0' + minutos : minutos}:
@@ -357,9 +381,9 @@ export const FichaEvaluacion = () => {
           </div>
         </div>
         </div>
-        
 
   <div className='ficha-modelo__02-main'>
+    <button type='button' className='button-30' onClick={()=>forceUpdate()}>Asignar opciones</button>
     <button type='submit' className='ficha-modelo__01-btn ficha-modelo__02-btn'>Guardar y continuar</button>
     <hr />
   <div className='ficha-modelo__02'>

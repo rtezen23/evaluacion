@@ -83,11 +83,11 @@ const Base = db.define('base', {
         type: DataTypes.STRING,
         allowNull: false,
     },
-    ficha: {
+    FICHA: {
         type: DataTypes.STRING,
         allowNull: true,
     },
-    estado: {
+    ESTADO: {
         type: DataTypes.STRING,
         allowNull: false,
         defaultValue: 'pendiente'
