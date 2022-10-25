@@ -86,18 +86,38 @@ const optionsResponsableNoFCR = [
   { label: 'SI_FCR', value: 'SI_FCR'},
 ]
 
-const optionsMotivoNoFCR = [
-  { label: 'No rebate las veces establecidas (insistencia)', value: 'No rebate las veces establecidas (insistencia)' },
-  { label: 'No rebate objeciones', value: 'No rebate objeciones' },
-  { label: 'No exige el pago (urgencia)', value: 'No exige el pago (urgencia)' },
-  { label: 'No exige el pago de manera correcta', value: 'No exige el pago de manera correcta' },
-  { label: 'No concientiza al cliente', value: 'No concientiza al cliente' },
-  { label: 'As - corta llamada', value: 'As - corta llamada' },
-  { label: 'Cliente corta llamada', value: 'Cliente corta llamada' },
-  { label: 'Asesor realiza gestión correcta', value: 'Asesor realiza gestión correcta' },
-  { label: 'Cliente predispuesto', value: 'Cliente predispuesto' },
-  { label: 'Asesor logra pdp correctamente', value: 'Asesor logra pdp correctamente' },
-]
+// const optionsMotivoNoFCR = [
+//   { label: 'No rebate las veces establecidas (insistencia)', value: 'No rebate las veces establecidas (insistencia)' },
+//   { label: 'No rebate objeciones', value: 'No rebate objeciones' },
+//   { label: 'No exige el pago (urgencia)', value: 'No exige el pago (urgencia)' },
+//   { label: 'No exige el pago de manera correcta', value: 'No exige el pago de manera correcta' },
+//   { label: 'No concientiza al cliente', value: 'No concientiza al cliente' },
+//   { label: 'As - corta llamada', value: 'As - corta llamada' },
+//   { label: 'Cliente corta llamada', value: 'Cliente corta llamada' },
+//   { label: 'Asesor realiza gestión correcta', value: 'Asesor realiza gestión correcta' },
+//   { label: 'Cliente predispuesto', value: 'Cliente predispuesto' },
+//   { label: 'Asesor logra pdp correctamente', value: 'Asesor logra pdp correctamente' },
+// ]
+
+const optionsMotivoNoFCR = {
+  'Asesor': [
+      { label: 'No rebate las veces establecidas (insistencia)', value: 'No rebate las veces establecidas (insistencia)' },
+      { label: 'No rebate objeciones', value: 'No rebate objeciones' },
+      { label: 'No exige el pago (urgencia)', value: 'No exige el pago (urgencia)' },
+      { label: 'No exige el pago de manera correcta', value: 'No exige el pago de manera correcta' },
+      { label: 'No concientiza al cliente', value: 'No concientiza al cliente' },
+      { label: 'As - corta llamada', value: 'As - corta llamada' },
+  ],
+  'Cliente': [
+    { label: 'Cliente corta llamada', value: 'Cliente corta llamada' },
+    { label: 'Asesor realiza gestión correcta', value: 'Asesor realiza gestión correcta' },
+  ],
+  'SI_FCR': [
+    { label: 'Cliente predispuesto', value: 'Cliente predispuesto' },
+    { label: 'Asesor logra pdp correctamente', value: 'Asesor logra pdp correctamente' },
+  ]
+}
+
 
 export const FichaEvaluacion = () => {
 
@@ -317,8 +337,6 @@ export const FichaEvaluacion = () => {
   // })
   // }
 
-  console.log(fichaDatos.alerta)
-
   const setNewPesos = (e, state, setState, total_peso, set_total_peso, allObjects) => {
     // Restar % actual al % total
     const cumpleItem = state.find(item => item.nombre === 'Sí cumple');
@@ -375,6 +393,7 @@ export const FichaEvaluacion = () => {
   }
 
   const handleCheckboxOption = (e) => {
+    setShowMotivoAlerta(e.target.checked);
     setFichaDatos(prevFichaDatos => {
       return {
           ...prevFichaDatos,
@@ -511,6 +530,7 @@ export const FichaEvaluacion = () => {
   // };
   
   // SELECTS 
+  const [showMotivoAlerta, setShowMotivoAlerta] = useState(false)
 
   return (
     <section className='ficha-evaluacion'>
@@ -565,21 +585,30 @@ export const FichaEvaluacion = () => {
 
           <h5>ALERTA</h5>
           <div>
-            <input className='interferencia-checkbox' type="checkbox" name="alerta" onChange={handleCheckboxOption} checked={fichaDatos.alerta}/>
+              <input className='interferencia-checkbox' type="checkbox" name="alerta" onChange={handleCheckboxOption} checked={fichaDatos.alerta}/>
           </div>
           <div>
-            <h5>Motivo Alerta</h5>
-            <Select name='descripcion_alerta' ref={motivoAlertaRef} options={optionsMotivoAlerta} onChange={e => handleSelectOption(e, motivoAlertaRef)}/>
+            {
+              showMotivoAlerta && (
+                <>
+                <h5>Motivo Alerta</h5>
+                <Select name='descripcion_alerta' ref={motivoAlertaRef} options={optionsMotivoAlerta} onChange={e => handleSelectOption(e, motivoAlertaRef)}/>
+                </>
+              )
+            }
           </div>
-
-          <h5>Responsable no FCR</h5>
-          <div>
-            <Select name='responsabilidad_no_fcr' ref={responsableNoFcrRef} options={optionsResponsableNoFCR} onChange={e => handleSelectOption(e, responsableNoFcrRef)}/>
-          </div>
-          <div>
-            <h5>Motivo no FCR</h5>
-            <Select name='motivo_no_fcr' ref={motivoNoFcrRef} options={optionsMotivoNoFCR} onChange={e => handleSelectOption(e, motivoNoFcrRef)}/>
-          </div>
+            {
+              !showMotivoAlerta && <>
+                <h5>Responsable no FCR</h5>
+                <div>
+                  <Select name='responsabilidad_no_fcr' ref={responsableNoFcrRef} options={optionsResponsableNoFCR} onChange={e => handleSelectOption(e, responsableNoFcrRef)}/>
+                </div>
+                <div>
+                  <h5>Motivo no FCR</h5>
+                  <Select name='motivo_no_fcr' ref={motivoNoFcrRef} options={optionsMotivoNoFCR[fichaDatos.responsabilidad_no_fcr]} onChange={e => handleSelectOption(e, motivoNoFcrRef)}/>
+                </div>
+              </>
+            }
 
           <h5 className='gray'>CALIFICACION</h5>
           <p className='span-2 calificacion-p gray'>{porcentaje}%</p>

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import React from 'react'
+import React, { Children } from 'react'
 import { useState } from 'react';
 import { useEffect } from 'react';
 import DataTable from 'react-data-table-component';
@@ -7,14 +7,19 @@ import * as XLSX from 'xlsx';
 import {FaSearch} from 'react-icons/fa';
 import {ImCalendar} from 'react-icons/im';
 import ExportButton from '../utils/ExportButton';
+import { useFilter } from '../hooks/useFilter';
 import './fichaEvaluacionTable.css';
+
 
 // const URL = 'http://192.168.1.51:4000/api/v1/Reporte';
 const API_URL = `${import.meta.env.VITE_API_URL}api/v1/fichas`;
 
 export const FichaEvaluacionTable = () => {
 
+    
     const [datosFicha, setDatosFicha] = useState([])
+    const [firstDate, setFirstDate] = useState('')
+    const [secondDate, setSecondDate] = useState('')
 
     const columns = [
         {
@@ -320,11 +325,16 @@ export const FichaEvaluacionTable = () => {
         },
     ];
 
+    const { inputText, suggestions, setSuggestions, showAll, handleFilter, dateFilter } = useFilter(datosFicha);
+
     const showData = async () => {
 		const response = await fetch(API_URL);
 		const data = await response.json();
 		setDatosFicha(data.fichas);
+        setSuggestions(data.fichas);
 	};
+    //FILTER
+    
 
     useEffect(() => {
         showData()
@@ -336,20 +346,69 @@ export const FichaEvaluacionTable = () => {
         selectAllRowsItem: true,
         selectAllRowsItemText: 'Todos',
       };
-
+      console.log(datosFicha)
   return (
     <div>
-        <ExportButton data={datosFicha} filename={'Evaluación Reporte'}/>
-        <DataTable
-					columns={columns}
-					data={datosFicha}
-					pagination
-					paginationComponentOptions={paginationOptions}
-					fixedHeader
-					fixedHeaderScrollHeight='600px'
-					title="Reporte:"
-                    responsive
-		/>
+        
+        <div className='reporteTable-date-container'>
+					<div className='reporteTable-date__input-container'>
+						<label htmlFor='desde'>Desde:</label>
+						<input
+							className='reporteTable-date__firstDate-input'
+							type='date'
+							name='desde'
+							value={firstDate}
+							onChange={e => setFirstDate(e.target.value)}
+						/>
+						<label htmlFor='hasta'>Hasta:</label>
+						<input
+							className='reporteTable-date__secondDate-input'
+							type='date'
+							name='hasta'
+							value={secondDate}
+							onChange={e => setSecondDate(e.target.value)}
+						/>
+						<ImCalendar
+							className='reporteTable-date__icon'
+							onClick={()=>dateFilter(firstDate, secondDate)}
+						/>
+					</div>
+					<button
+						className='reporteTable-date__button'
+						onClick={showAll}
+					>
+						Mostrar todo
+					</button>
+				</div>
+        <div className='registros-multicanal___filter-export'>
+            <ExportButton data={datosFicha} filename={'Evaluación Reporte'}/>
+            <div className='registros-multicanal__search-container'>
+                <input className='registros-multicanal__input' value={inputText} onChange={e=>handleFilter(e.target.value, datosFicha)}/>
+                <FaSearch className='registros-multicanal__input-search'/>
+            </div>
+        </div>
+        {
+            suggestions ? <DataTable
+                        columns={columns}
+                        data={suggestions}
+                        pagination
+                        paginationComponentOptions={paginationOptions}
+                        fixedHeader
+                        fixedHeaderScrollHeight='600px'
+                        title="Reporte:"
+                        responsive
+            />
+            : <DataTable
+            columns={columns}
+            data={datosFicha}
+            pagination
+            paginationComponentOptions={paginationOptions}
+            fixedHeader
+            fixedHeaderScrollHeight='600px'
+            title="Reporte:"
+            responsive
+/>
+        }
     </div>
   )
 }
