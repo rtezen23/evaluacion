@@ -49,7 +49,6 @@ export const checkToken = () => {
 			const res = await axios.get(`${USERS_URL}check-token`, {
 				headers: { authorization: `Bearer ${token}` },
 			});
-			console.log(res)
 			dispatch(usersActions.refreshUser({ user: res.data.user }));
 		} catch (error) {
 			dispatch(logout());

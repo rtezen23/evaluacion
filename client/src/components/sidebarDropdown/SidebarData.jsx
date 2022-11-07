@@ -12,16 +12,22 @@ import {BiImport} from 'react-icons/bi';
 import {GrDocumentSound} from 'react-icons/gr';
 
 export const SidebarData = [
-  {
-    title: 'GRABACIONES',
-    path: '/',
-    icon: <HiDocumentText className='nav-icon'/>,
-    cName: 'nav-text'
-  },
+  // {
+  //   title: 'GRABACIONES',
+  //   path: '/',
+  //   icon: <HiDocumentText className='nav-icon'/>,
+  //   cName: 'nav-text'
+  // },
   {
     title: 'MONITOREO',
     path: '/',
     icon: <MdOutlineMonitor className='nav-icon'/>,
+    cName: 'nav-text'
+  },
+  {
+    title: 'REGISTRO',
+    path: '/table',
+    icon: <HiDocumentText className='nav-icon'/>,
     cName: 'nav-text'
   },
   // {

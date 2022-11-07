@@ -31,7 +31,7 @@ const createFicha = catchAsync(async (req, res, next) => {
         rol,
         hora_inicio,
         hora_fin,
-        duracion_monitorio,
+        duracion_monitoreo,
         saludo_11,
         contactar_con_persona_12,
         identificacion_gestor_13,
@@ -82,7 +82,7 @@ const createFicha = catchAsync(async (req, res, next) => {
         rol,
         hora_inicio,
         hora_fin,
-        duracion_monitorio,
+        duracion_monitoreo,
         saludo_11,
         contactar_con_persona_12,
         identificacion_gestor_13,
@@ -122,7 +122,22 @@ const getAllFichas = catchAsync(async (req, res, next) => {
 
 });
 
+const getFichasByUser = catchAsync(async (req, res, next) => {
+    const { monitor } = req.params;
+
+    const fichas = await Ficha.findAll({
+        where: { supervisor: monitor }
+    });
+
+    res.status(200).json({
+        status: 'success',
+        fichas,
+    });
+
+});
+
 module.exports = {
     createFicha,
     getAllFichas,
+    getFichasByUser
 };

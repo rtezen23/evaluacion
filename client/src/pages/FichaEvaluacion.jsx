@@ -9,9 +9,9 @@ import audio from "../assets/audio.mp3";
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { FichaEvaluacionTable } from './FichaEvaluacionTable';
 import { deleteRegister } from '../store/actions/registers.actions';
 import { checkToken } from '../store/actions/user.actions';
+import { FichaEvaluacionMonitor } from './FichaEvaluacionMonitor';
 
 const FICHAS_URL = `${import.meta.env.VITE_API_URL}api/v1/fichas/`;
 const BASE_URL = `${import.meta.env.VITE_API_URL}api/v1/base/`;
@@ -132,7 +132,6 @@ export const FichaEvaluacion = () => {
 	const [segundos, setSegundos] = useState(0);
 	const [minutos, setMinutos] = useState(0);
 	const [assigned, setAssigned] = useState([]);
-  const [showSubmit, setShowSubmit] = useState(false);
   const [porcentaje, setPorcentaje] = useState(0)
   const [infoFicha, setInfoFicha] = useState({});
 
@@ -252,7 +251,7 @@ export const FichaEvaluacion = () => {
         rol: '',
         hora_inicio: '',
         hora_fin: '',
-        duracion_monitorio: '',
+        duracion_monitoreo: '',
         saludo_11: '',
         contactar_con_persona_12: '',
         identificacion_gestor_13: '',
@@ -432,22 +431,7 @@ export const FichaEvaluacion = () => {
   
 
   /* TIME */
-  let timer;
-  const handleTime = () => {
-    setShowSubmit(true);
-    timer = setInterval(() => {
-      setSegundos(prevSegundos => prevSegundos + 1);
-
-			if (segundos === 59) {
-				setMinutos(prevMinutos => prevMinutos + 1);
-				setSegundos(0);
-			}
-			if (minutos === 59) {
-				// setHoras(prevHoras => prevHoras + 1);
-				setMinutos(0);
-			}
-    }, 1000);
-  }
+  
 
   const [ datosBase, setDatosBase ] = useState([]);
   const [ infoCartera, setInfoCartera ] = useState({
@@ -457,66 +441,138 @@ export const FichaEvaluacion = () => {
   });
 
   const [ignored, forceUpdate] = useReducer(x => x + 1, 0);
-
-  useEffect( () => {
-    // dispatch(checkToken());
-    axios.get(BASE_URL)
-    .then(res => {
-      // REGISTROS TOTALES DE LA IMPORTACION
-      // const ficha = res.data.base.filter(base => base.USUARIO === user.usuario)[0].FICHA === '1' ? infoFicha01 : infoFicha02;
-      // setInfoFicha(prevInfoFicha => {return { ...prevInfoFicha, ficha}});
-      setInfoFicha(res.data.base.filter(base => base.USUARIO === user.usuario)[0].FICHA === '1' ? infoFicha01 : infoFicha02);
-      setDatosBase(res.data.base);
-      // REGISTROS DE LA IMPORTACION QUE CORRESPONDEN AL ASESOR
-      setAssigned(res.data.base.filter(base => base.USUARIO === user.usuario))
-      axios.get(CARTERAS_URL)
-      .then(res2 => {
-        // setDatosCarteras(res2.data.carteras);
-        // handleCarteras(res.data.carteras);
-        setInfoCartera(res2.data.carteras.find( item => item.idcartera === (res.data.base.filter(base => base.USUARIO === user.usuario)[0]?.CARTERA)));
-      })
-      .catch(err => console.log(err))
-      
-    })
-    .catch(err => console.log(err))
+  const [startTime, setStartTime] = useState('')
+  // const [endTime, setEndTime] = useState('')
+  // const today = new Date();
+  useEffect(() => {
    
-    setInfoData();
-    
-  },[ignored])
+		if (!isAuth) {
+       dispatch(checkToken());
+    };
 
+    if (!user) {
+      return
+    }
+
+    setStartTime(new Date());
+    //IMPORTACION DE TODA LA BASE (unnecesary)
+    // axios.get(BASE_URL)
+  //   .then(res => {
+  //     // REGISTROS TOTALES DE LA IMPORTACION
+  //     // setInfoFicha(prevInfoFicha => {return { ...prevInfoFicha, ficha}});
+  //     setDatosBase(res.data.base);
+
+  //     // REGISTROS DE LA IMPORTACION QUE CORRESPONDEN AL ASESOR
+  //     axios.get(BASE_URL+user?.usuario)
+  //     .then(res2 => {
+  //       console.log(res2.data.userBase)
+  //       setAssigned(res2.data.userBase);
+  //       setInfoFicha(res2.data.userBase?.FICHA === '1' ? infoFicha01 : infoFicha02);
+  //       axios.get(`${CARTERAS_URL}${res2.data.userBase?.CARTERA}`)
+  //         .then(res3 => {
+  //           // setDatosCarteras(res3.data.carteraFound);
+  //           // handleCarteras(res.data.carteras);
+  //           setInfoCartera(res3.data.carteraFound);
+  //         })
+  //         .catch(err => console.log(err))
+  //       // ASIGNAR OPCIONES A LOS SELECT POR LA FICHA 
+  //       setInfoData();
+  //     })
+  //   .catch(err => console.log(err))
+  // })
+  // .catch(err => console.log(err))
+
+    // REGISTROS DE LA IMPORTACION QUE CORRESPONDEN AL ASESOR
+    axios.get(BASE_URL+user?.usuario)
+    .then(res2 => {
+      if (!res2.data.userBase) {
+        alert('No cuenta con fichas actualmente');
+        navigate('/table');
+        return
+      }
+      setAssigned(res2.data.userBase);
+      setInfoFicha(res2.data.userBase.FICHA === '1' ? infoFicha01 : infoFicha02);
+      axios.get(`${CARTERAS_URL}${res2.data.userBase.CARTERA}`)
+        .then(res3 => {
+          // setDatosCarteras(res3.data.carteraFound);
+          // handleCarteras(res.data.carteras);
+          setInfoCartera(res3.data.carteraFound);
+        })
+        .catch(err => console.log(err))
+      // ASIGNAR OPCIONES A LOS SELECT POR LA FICHA 
+      setInfoData();
+    })
+  .catch(err => {
+    console.log(err)
+    
+  })
+	}, [isAuth, dispatch, ignored, user]);
+
+  useEffect(()=> {
+    let timer;
+      
+      timer = setInterval(() => {
+        setSegundos(prevSegundos => prevSegundos + 1);
+  
+        if (segundos === 59) {
+          setMinutos(prevMinutos => prevMinutos + 1);
+          setSegundos(0);
+        }
+      }, 1000);
+  
+      return () => clearInterval(timer)
+  })
+  
   const handleCancel = () => {
     window.location.reload();
     clearInterval(timer)
   }
-
   const [ tramoSegundos, setTramoSegundos ] = useState(0);
-
   const handleSubmit = (e) => {
     e.preventDefault();
+    const endTime = new Date();
+
+    let difference = endTime.getTime() - startTime.getTime();
+
+    difference = difference / 1000;
+    let hourDifference = Math.floor(difference / 3600);
+    difference -= hourDifference * 3600;
+    let minuteDifference = Math.floor(difference / 60);
+    difference -= minuteDifference * 60;
+
+    const seconds = Math.ceil((difference % 60000) / 1000);
+    
+
     // SETTING OTHER VALUES
     fichaDatos.calificacion_final = porcentaje;
-    fichaDatos.id_evaluacion = assigned[0]?.id;
+    fichaDatos.id_evaluacion = assigned?.id;
     fichaDatos.cartera = infoCartera?.cartera;
     fichaDatos.tramo = infoCartera?.tramo;
-    fichaDatos.agente = assigned[0].ASESOR;
-    fichaDatos.fecha_llamada = assigned[0]?.FECHAGEST;
-    fichaDatos.telefono = assigned[0].ID_CONT;
-    fichaDatos.dni_cliente = assigned[0].IDENTIFICADOR;
+    fichaDatos.agente = assigned.ASESOR;
+    fichaDatos.fecha_llamada = assigned?.FECHAGEST;
+    fichaDatos.telefono = assigned.ID_CONT;
+    fichaDatos.dni_cliente = assigned.IDENTIFICADOR;
     fichaDatos.tmo_segundos = tramoSegundos;
     fichaDatos.fecha_monitoreo = new Date().toLocaleString('es-PE');
     fichaDatos.supervisor= user.nombres;
     fichaDatos.rol= user.cargo;
     fichaDatos.alerta = fichaDatos.alerta ? 'SI' : 'NO'
+    fichaDatos.hora_inicio = startTime.getHours() + ":" + `${startTime.getMinutes().length===1 ? '0'+startTime.getMinutes() : startTime.getMinutes()}` + ":" + `${startTime.getSeconds().length===1 ? `0${startTime.getSeconds()}` : startTime.getSeconds()}`;
+    fichaDatos.hora_fin = endTime.getHours() + ":" + `${endTime.getMinutes().length===1 ? '0'+endTime.getMinutes() : endTime.getMinutes()}` + ":" + `${endTime.getSeconds().length===1 ? `0${endTime.getSeconds()}` : endTime.getSeconds()}`;
+    fichaDatos.duracion_monitoreo = Math.round(difference);
+    // fichaDatos.duracion_monitoreo = minutos * 60 +  segundos + 1;
 
     axios.post(FICHAS_URL, fichaDatos)
     .then(res => {
-      dispatch(deleteRegister(assigned[0]?.id));
-      alert('Ficha agregada, vuelva a iniciar sesión para continuar');
-      navigate('/login')
+      dispatch(deleteRegister(assigned?.id));
+      const respuesta = confirm('Ficha agregada, vuelva a iniciar sesión para continuar');
+      if (respuesta) {
+        navigate('/')
+        window.location.reload();
+      } else alert('Cancelado')
     })
     .catch(err => console.log(err))
   }
-  console.log(fichaDatos)
   // audio
   const [audioFile, setAudioFile] = useState('')
   const audioRef = useRef(null);
@@ -532,13 +588,16 @@ export const FichaEvaluacion = () => {
   // SELECTS 
   const [showMotivoAlerta, setShowMotivoAlerta] = useState(false)
 
+  
+
   return (
     <section className='ficha-evaluacion'>
       
       <form className='ficha-evaluacion__form' onSubmit={handleSubmit}>
-        
-    <div className='ficha-modelo__01-main'>
-          <h2 className='ficha-modelo__01-main__title'>EVALUACIÓN FICHA {assigned[0]?.FICHA}</h2>
+        {
+          !user ? <p>Cargando...</p>
+          : <div className='ficha-modelo__01-main'>
+          <h2 className='ficha-modelo__01-main__title'>EVALUACIÓN FICHA {assigned?.FICHA}</h2>
           <p className='ficha-modelo__01-main__time'>
                 {/* {horas < 10 ? '0' + horas : horas}: */}
                 {minutos < 10 ? '0' + minutos : minutos}:
@@ -549,20 +608,20 @@ export const FichaEvaluacion = () => {
         <div className='ficha-modelo__01'>
 
           <h5 className='gray'>CARTERA</h5>
-          <p className='gray'>{infoCartera?.cartera}</p>
-          <span className='gray'>{infoCartera?.tramo}</span>
+          <p className='gray'>{infoCartera.cartera}</p>
+          <span className='gray'>{infoCartera.tramo}</span>
 
           <h5>ID GESTION</h5>
-          <p className='span-2'>{assigned[0]?.id}</p>
+          <p className='span-2'>{assigned?.id}</p>
 
           <h5 className='gray'>AGENTE</h5>
-          <p className='span-2 gray'>{assigned[0]?.ASESOR}</p>
+          <p className='span-2 gray'>{assigned?.ASESOR}</p>
 
           <h5>CLIENTE</h5>
-          <p className='span-2'>{assigned[0]?.IDENTIFICADOR}</p>
+          <p className='span-2'>{assigned?.IDENTIFICADOR}</p>
 
           <h5 className='gray'>TIPIFICACIÓN</h5>
-          <p className='span-2 gray'>{assigned[0]?.EFECTO}</p>
+          <p className='span-2 gray'>{assigned?.EFECTO}</p>
 
           <h5 className='gray'>TMO</h5>
           <div className='gray span-2'>
@@ -570,8 +629,8 @@ export const FichaEvaluacion = () => {
           </div>
 
           <h5>FECHA / TELÉFONO</h5>
-          <p>{assigned[0]?.FECHAGEST}</p>
-          <p>{assigned[0]?.ID_CONT}</p>
+          <p>{assigned?.FECHAGEST}</p>
+          <p>{assigned?.ID_CONT}</p>
 
             <h5 className='gray'>Tipo de Llamada</h5>
             <Select name='tipo_llamada' ref={tipoLlamadaRef} className='gray' options={optionsTipoLlamada} onChange={e => handleSelectOption(e, tipoLlamadaRef)}/>
@@ -627,6 +686,8 @@ export const FichaEvaluacion = () => {
           </div>
         </div>
         </div>
+        }
+    
 
   <div className='ficha-modelo__02-main'>
     <button type='button' className='button-30' onClick={()=>forceUpdate()}>Asignar opciones</button>
@@ -752,7 +813,9 @@ export const FichaEvaluacion = () => {
           </div>
         </div>
       </form>
-      <FichaEvaluacionTable/>
+      {
+        user && <FichaEvaluacionMonitor monitor={user.nombres} />
+      }
     </section>
   )
 }

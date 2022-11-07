@@ -19,7 +19,23 @@ const getAllBase = async (req, res, next) => {
         base,
     });
 
-}; 
+};
+
+const getBaseById = catchAsync(async (req, res, next) => {
+    const { user } = req.params;
+
+    const userBase = await Base.findOne({
+        where: {
+            USUARIO: user,
+            estado: 'pendiente'
+        }
+    });
+
+    res.status(201).json({
+        status: 'success',
+        userBase,
+    });
+});
 
 const createBase = catchAsync(async (req, res, next) => {
     const baseData = req.body;
@@ -45,5 +61,6 @@ module.exports = {
     getAllBase,
     getAvailableBase,
     createBase,
-    deleteBase
+    deleteBase,
+    getBaseById
 }

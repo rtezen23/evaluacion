@@ -12,11 +12,10 @@ import './fichaEvaluacionTable.css';
 
 
 // const URL = 'http://192.168.1.51:4000/api/v1/Reporte';
-const API_URL = `${import.meta.env.VITE_API_URL}api/v1/fichas`;
+const API_URL = `${import.meta.env.VITE_API_URL}api/v1/fichas/`;
 
-export const FichaEvaluacionTable = () => {
-
-    
+export const FichaEvaluacionMonitor = ({ monitor }) => {
+    console.log(monitor)
     const [datosFicha, setDatosFicha] = useState([])
     const [firstDate, setFirstDate] = useState('')
     const [secondDate, setSecondDate] = useState('')
@@ -328,13 +327,11 @@ export const FichaEvaluacionTable = () => {
     const { inputText, suggestions, setSuggestions, showAll, handleFilter, dateFilter } = useFilter(datosFicha);
 
     const showData = async () => {
-		const response = await fetch(API_URL);
+		const response = await fetch(`${API_URL}${monitor}`);
 		const data = await response.json();
 		setDatosFicha(data.fichas);
         setSuggestions(data.fichas);
 	};
-    //FILTER
-    
 
     useEffect(() => {
         showData()

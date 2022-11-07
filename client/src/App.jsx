@@ -10,6 +10,7 @@ import Signup from './pages/Signup';
 import Sidebar from './components/sidebarDropdown/Sidebar';
 import { Importacion } from './pages/Importacion';
 import { ReporteBase } from './pages/ReporteBase';
+import { FichaEvaluacionTable } from './pages/FichaEvaluacionTable';
 // import ErrorModal from './components/ErrorModal';
 
 function App() {
@@ -23,6 +24,7 @@ function App() {
           <Route path='/login' element={<Login/>}/>
           <Route element={<ProtectedRoutesLogin/>}>
             <Route path='/' element={<FichaEvaluacion/>}/>
+            <Route path='/table' element={<FichaEvaluacionTable/>}/>
             <Route path='/base' element={<ReporteBase/>}/>
             <Route path='/importacion' element={<Importacion/>}/>
             <Route path='/signup' element={<Signup/>}/>
