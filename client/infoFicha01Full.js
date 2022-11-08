@@ -1,6 +1,6 @@
-export default [
-    {
-        total_peso: 5,
+export default {
+    "apertura": {
+        total_peso: 3,
         apertura11: [
             {
                 nombre: 'No saluda al cliente',
@@ -18,7 +18,7 @@ export default [
                 nombre: 'Sí cumple',
                 peso: 1,
                 isSelected: false,
-                peso_percent: 20
+                peso_percent: 33.33
             },
             {
                 nombre: 'No aplica',
@@ -48,9 +48,9 @@ export default [
             },
             {
                 nombre: 'Sí cumple',
-                peso: 2,
+                peso: 1,
                 isSelected: false,
-                peso_percent: 40
+                peso_percent: 33.33
             },
             {
                 nombre: 'No aplica',
@@ -80,9 +80,9 @@ export default [
             },
             {
                 nombre: 'Sí cumple',
-                peso: 2,
+                peso: 1,
                 isSelected: false,
-                peso_percent: 40
+                peso_percent: 33.33
             },
             {
                 nombre: 'No aplica',
@@ -92,8 +92,8 @@ export default [
             },
         ],
     },
-    {
-        total_peso: 27,
+    "indagacion": {
+        total_peso: 22,
         indagacion21: [
             {
                 nombre: 'No brinda información de la situación',
@@ -117,7 +117,7 @@ export default [
                 nombre: 'Sí cumple',
                 peso: 2,
                 isSelected: false,
-                peso_percent: 7.41
+                peso_percent: 9.09
             },
             {
                 nombre: 'No aplica',
@@ -147,9 +147,9 @@ export default [
             },
             {
                 nombre: 'Sí cumple',
-                peso: 9,
+                peso: 10,
                 isSelected: false,
-                peso_percent: 33.33
+                peso_percent: 45.45
             },
             {
                 nombre: 'No aplica',
@@ -191,9 +191,9 @@ export default [
             },
             {
                 nombre: 'Sí cumple',
-                peso: 16,
+                peso: 10,
                 isSelected: false,
-                peso_percent: 59.26
+                peso_percent: 45.45
             },
             {
                 nombre: 'No aplica',
@@ -203,7 +203,7 @@ export default [
             }
         ],
     },
-    {
+    "manejo": {
         total_peso: 44,
         manejo31 :[
             {
@@ -226,9 +226,9 @@ export default [
             },
             {
                 nombre: 'Sí cumple',
-                peso: 20,
+                peso: 19,
                 isSelected: false,
-                peso_percent: 45.45
+                peso_percent: 43.18
             },
             {
                 nombre: 'No aplica',
@@ -264,9 +264,9 @@ export default [
             },
             {
                 nombre: 'Sí cumple',
-                peso: 24,
+                peso: 25,
                 isSelected: false,
-                peso_percent: 54.55
+                peso_percent: 56.82
             },
             {
                 nombre: 'No aplica',
@@ -276,7 +276,7 @@ export default [
             },
         ],
     },
-    {
+    "cierre": {
         total_peso: 6,
         cierre41: [
             {
@@ -337,8 +337,8 @@ export default [
             },
         ]
     },
-    {
-        total_peso: 6,
+    "habilidades": {
+        total_peso: 11,
         habilidades51: [
             {
                 nombre: 'Repregunta información clara',
@@ -362,7 +362,7 @@ export default [
                 nombre: 'Sí cumple',
                 peso: 2,
                 isSelected: false,
-                peso_percent: 33.33
+                peso_percent: 18.18
             },
             {
                 nombre: 'No aplica',
@@ -404,9 +404,9 @@ export default [
             },
             {
                 nombre: 'Sí cumple',
-                peso: 2,
+                peso: 4,
                 isSelected: false,
-                peso_percent: 33.33
+                peso_percent: 36.36
             },
             {
                 nombre: 'No aplica',
@@ -448,9 +448,9 @@ export default [
             },
             {
                 nombre: 'Sí cumple',
-                peso: 2,
+                peso: 5,
                 isSelected: false,
-                peso_percent: 33.33
+                peso_percent: 45.46
             },
             {
                 nombre: 'No aplica',
@@ -460,8 +460,8 @@ export default [
             },
         ]
     },
-    {
-        total_peso: 12,
+    "herramientas": {
+        total_peso: 14,
         herramientas61: [
             {
                 nombre: 'No utiliza la información cuando es necesario',
@@ -483,9 +483,9 @@ export default [
             },
             {
                 nombre: 'Sí cumple',
-                peso: 2,
+                peso: 6,
                 isSelected: false,
-                peso_percent: 16.7
+                peso_percent: 42.86
             },
             {
                 nombre: 'No aplica',
@@ -515,9 +515,9 @@ export default [
             },
             {
                 nombre: 'Sí cumple',
-                peso: 10,
+                peso: 8,
                 isSelected: false,
-                peso_percent: 83.33
+                peso_percent: 57.14
             },
             {
                 nombre: 'No aplica',
@@ -527,4 +527,4 @@ export default [
             }
         ]
     }
-]
+}

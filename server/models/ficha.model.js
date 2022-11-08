@@ -71,10 +71,6 @@ const Ficha = db.define('ficha', {
         type: DataTypes.STRING,
         allowNull: true,
     },
-    perfil_cliente: {
-        type: DataTypes.STRING,
-        allowNull: true,
-    },
     alerta: {
         type: DataTypes.STRING,
         allowNull: true,

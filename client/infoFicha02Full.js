@@ -1,5 +1,5 @@
-export default [
-    {
+export default {
+    "apertura": {
         total_peso: 5,
         apertura11: [
             {
@@ -92,7 +92,7 @@ export default [
             },
         ],
     },
-    {
+    "indagacion": {
         total_peso: 27,
         indagacion21: [
             {
@@ -203,7 +203,7 @@ export default [
             }
         ],
     },
-    {
+    "manejo": {
         total_peso: 44,
         manejo31 :[
             {
@@ -276,7 +276,7 @@ export default [
             },
         ],
     },
-    {
+    "cierre": {
         total_peso: 6,
         cierre41: [
             {
@@ -337,7 +337,7 @@ export default [
             },
         ]
     },
-    {
+    "habilidades": {
         total_peso: 6,
         habilidades51: [
             {
@@ -460,7 +460,7 @@ export default [
             },
         ]
     },
-    {
+    "herramientas": {
         total_peso: 12,
         herramientas61: [
             {
@@ -527,4 +527,4 @@ export default [
             }
         ]
     }
-]
+}

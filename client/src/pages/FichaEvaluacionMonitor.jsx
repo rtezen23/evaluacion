@@ -15,7 +15,6 @@ import './fichaEvaluacionTable.css';
 const API_URL = `${import.meta.env.VITE_API_URL}api/v1/fichas/`;
 
 export const FichaEvaluacionMonitor = ({ monitor }) => {
-    console.log(monitor)
     const [datosFicha, setDatosFicha] = useState([])
     const [firstDate, setFirstDate] = useState('')
     const [secondDate, setSecondDate] = useState('')

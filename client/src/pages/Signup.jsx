@@ -10,7 +10,7 @@ import './signup.css';
 
 const optionsCargo = [
   { value: 'admin', label: 'admin' },
-  { value: 'asesor', label: 'monitor' },
+  { value: 'monitor', label: 'monitor' },
 ];
 
 function Signup() {
