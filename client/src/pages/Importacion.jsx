@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import {setRegisters} from '../store/actions/registers.actions';
 import {getRegisters} from '../store/actions/registers.actions';
 import axios from 'axios';
+import AsignarFicha from './AsignarFicha';
 
 const columns = [
 	{
@@ -184,9 +185,12 @@ const paginationOptions = {
           <button className='importacion__label' onClick={handleFile}>Guardar registros</button>
         </div>
         {base.length ? (
-          <h3>
-            Total de registros: {base.length}
-          </h3>
+			<>
+				<h3>
+					Total de registros: {base.length}
+				</h3>
+				<AsignarFicha/>
+			</>
           ) : ''
         }
         <DataTable

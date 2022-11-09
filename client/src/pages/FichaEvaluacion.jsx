@@ -240,7 +240,6 @@ export const FichaEvaluacion = () => {
         id_evaluacion: '',
         cartera: '', 
         tramo: '',
-        user_agente: '',
         agente: '',
         mes_llamada: '',
         fecha_llamada: '',
@@ -253,7 +252,6 @@ export const FichaEvaluacion = () => {
         tmo_segundos: 0,
         tipo_llamada: '',
         tipo_gestion: '',
-        perfil_cliente: '',
         alerta: false,
         descripcion_alerta: '',
         motivo_no_pago: '',
@@ -264,7 +262,7 @@ export const FichaEvaluacion = () => {
         rol: '',
         hora_inicio: '',
         hora_fin: '',
-        duracion_monitoreo: '',
+        duracion_monitoreo: 0,
         saludo_11: '',
         contactar_con_persona_12: '',
         identificacion_gestor_13: '',
@@ -540,6 +538,69 @@ if (!user) return
   //   .catch(err => console.log(err))
   // })
   // .catch(err => console.log(err))
+    const getCurrentWeek = () => {
+      console.log('firstWeekday', firstWeekday)
+      const offsetDate = 9 + firstWeekday - 2;
+      console.log('offsetDate', offsetDate)
+      return Math.floor(offsetDate / 7);
+    }
+
+    function getWeekOfMonth(date) {
+      console.log(date)
+      let adjustedDate = date.getDate()+ date.getDay();
+      let prefixes = ['0', '1', '2', '3', '4', '5'];
+      return (parseInt(prefixes[0 | adjustedDate / 7])+1);
+  }
+
+  function getNumberOfWeek() {
+    const today = new Date();
+    const firstDayOfYear = new Date(today.getFullYear(), 0, 1);
+    const pastDaysOfYear = (today - firstDayOfYear) / 86400000;
+    return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
+}
+
+const anotherFunction = () => {
+  currentDate = new Date();
+
+    startDate = new Date(currentDate.getFullYear(), 0, 1);
+    let days = Math.floor((currentDate - startDate) /
+        (24 * 60 * 60 * 1000));
+         
+    let weekNumber = Math.ceil(days / 7);
+ 
+    console.log(`Week number of ${currentDate} is ${weekNumber}`);
+}
+
+// returns 45
+// Date.prototype.getWeek = function() {
+//   var date = new Date(this.getTime());
+//   date.setHours(0, 0, 0, 0);
+//   // Thursday in current week decides the year.
+//   date.setDate(date.getDate() + 3 - (date.getDay() + 6) % 7);
+//   // January 4 is always in week 1.
+//   var week1 = new Date(date.getFullYear(), 0, 4);
+//   // Adjust to Thursday in week 1 and count number of weeks from date to week1.
+//   return 1 + Math.round(((date.getTime() - week1.getTime()) / 86400000
+//                         - 3 + (week1.getDay() + 6) % 7) / 7);
+// }
+
+// returns 1
+// Date.prototype.getWeekOfMonth = function() {
+//   var firstWeekday = new Date(this.getFullYear(), this.getMonth(), 1).getDay() - 1;
+//   if (firstWeekday < 0) firstWeekday = 6;
+//   var offsetDate = this.getDate() + firstWeekday - 2;
+//   return Math.floor(offsetDate / 7);
+// }
+
+function getWeekOfMonth(fecha) {
+  let date = new Date(fecha);
+  let firstWeekDay = new Date((date.getFullYear()), date.getMonth(), 1).getDay();
+  if (firstWeekDay > 0) firstWeekDay = 6;
+  let offsetDate = date.getDate() + firstWeekDay - 1;
+  return Math.floor(offsetDate / 7);
+}
+
+    console.log(getWeekOfMonth('11/15/2022'))
 
     // REGISTROS DE LA IMPORTACION QUE CORRESPONDEN AL ASESOR
     axios.get(BASE_URL+user?.usuario)
@@ -552,7 +613,7 @@ if (!user) return
         return
       }
       setAssigned(res2.data.userBase);
-      setInfoFicha(res2.data.userBase.FICHA === '1' ? infoFicha01 : infoFicha02);
+      setInfoFicha(res2.data.userBase.FICHA === 'ficha01' ? infoFicha01 : infoFicha02);
       axios.get(`${CARTERAS_URL}${res2.data.userBase.CARTERA}`)
         .then(res3 => {
           // setDatosCarteras(res3.data.carteraFound);
@@ -569,7 +630,7 @@ if (!user) return
   })
 	}, [isAuth, dispatch, user]);
 
-        // let timer;
+        let timer;
         // useEffect(()=> {
         //     timer = setInterval(() => {
         //       setSegundos(prevSegundos => prevSegundos + 1);
@@ -590,12 +651,32 @@ if (!user) return
   useEffect(()=>{
     porcentaje
   },[aperturaState])
-
+  console.log(assigned)
   const handleCancel = () => {
     window.location.reload();
     clearInterval(timer)
   }
   const [ tramoSegundos, setTramoSegundos ] = useState(0);
+
+  const getFechaLlamada = (date) => {
+          let [dateValues, timeValues] = date.split(' ');
+          const indiceDia = dateValues.indexOf('/');
+          const dia = dateValues.slice(0,indiceDia)
+          const indiceMes = dateValues.lastIndexOf('/');
+          const mes = dateValues.slice(indiceDia+1,indiceMes)
+          const año = dateValues.slice(indiceMes+1);
+          dateValues = `${mes.length === 1 ? `0${mes}` : mes}/${dia.length === 1 ? `0${dia}` : dia}/${año}`;
+          
+          const [month, day, year] = dateValues.split('/');
+          const [hours, minutes, seconds] = timeValues.split(':');
+
+          return new Date(
+            new Date(+year, month - 1, +day, +hours, +minutes, +seconds)
+              .toString()
+          ).toISOString();
+          // return new Date(stringFecha).toLocaleString();
+  }
+  console.log(getFechaLlamada('17/10/2022 10:25:59'))
   const handleSubmit = (e) => {
     e.preventDefault();
     const endTime = new Date();
@@ -609,14 +690,15 @@ if (!user) return
     difference -= minuteDifference * 60;
     const seconds = Math.ceil((difference % 60000) / 1000);
     
-
+    
     // SETTING OTHER VALUES
     fichaDatos.calificacion_final = porcentaje;
-    fichaDatos.id_evaluacion = assigned?.id;
-    fichaDatos.cartera = infoCartera?.cartera;
-    fichaDatos.tramo = infoCartera?.tramo;
+    fichaDatos.id_evaluacion = assigned.id;
+    fichaDatos.cartera = infoCartera.cartera;
+    fichaDatos.tramo = infoCartera.tramo;
     fichaDatos.agente = assigned.ASESOR;
-    fichaDatos.fecha_llamada = assigned?.FECHAGEST;
+    fichaDatos.mes_llamada = new Date().toLocaleString('es-PE', { month: 'long' });
+    fichaDatos.fecha_llamada = getFechaLlamada(assigned.FECHAGEST);
     fichaDatos.telefono = assigned.ID_CONT;
     fichaDatos.dni_cliente = assigned.IDENTIFICADOR;
     fichaDatos.tmo_segundos = tramoSegundos;
@@ -627,13 +709,14 @@ if (!user) return
     fichaDatos.hora_inicio = startTime.getHours() + ":" + `${startTime.getMinutes().toString().length===1 ? `0${startTime.getMinutes()}` : startTime.getMinutes()}` + ":" + `${startTime.getSeconds().toString().length===1 ? `0${startTime.getSeconds()}` : startTime.getSeconds()}`;
     fichaDatos.hora_fin = endTime.getHours() + ":" + `${endTime.getMinutes().toString().length===1 ? `0${endTime.getMinutes()}` : endTime.getMinutes()}` + ":" + `${endTime.getSeconds().toString().length===1 ? `0${endTime.getSeconds()}` : endTime.getSeconds()}`;
     fichaDatos.duracion_monitoreo = (minuteDifference * 60) + Math.round(difference);
+    fichaDatos.tipo_ficha = assigned.FICHA;
     // fichaDatos.duracion_monitoreo = minutos * 60 +  segundos + 1;
 
     axios.post(FICHAS_URL, fichaDatos)
     .then(res => {
       dispatch(deleteRegister(assigned?.id));
         alert('Ficha agregada, procediendo a la siguiente');
-        window.location.reload();
+        // window.location.reload();
     })
     .catch(err => console.log(err))
   }

@@ -323,6 +323,12 @@ export const FichaEvaluacionTable = () => {
             center: true,
             wrap: true
         },
+        {
+            name: 'tipo:ficha',
+            selector: row => <p className='ficha-evaluacion-table__item'>{row.tipo_ficha}</p>,
+            center: true,
+            wrap: true
+        },
     ];
 
     const { inputText, suggestions, setSuggestions, showAll, handleFilter, dateFilter } = useFilter(datosFicha);

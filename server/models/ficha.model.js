@@ -19,10 +19,6 @@ const Ficha = db.define('ficha', {
         type: DataTypes.STRING,
         allowNull: true,
     },
-    user_agente: {
-        type: DataTypes.STRING,
-        allowNull: true,
-    },
     agente: {
         type: DataTypes.STRING,
         allowNull: true,

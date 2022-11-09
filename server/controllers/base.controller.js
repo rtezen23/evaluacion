@@ -49,6 +49,26 @@ const createBase = catchAsync(async (req, res, next) => {
     });
 });
 
+const updateBases = catchAsync(async (req, res, next) => {
+    const { ficha, carterasSelected } = req.body;
+    console.log(ficha)
+    console.log(carterasSelected)
+    const bases = await Base.update({
+        FICHA: ficha
+    },
+    {
+        where: {
+            CARTERA: carterasSelected
+        }
+    });
+
+    res.status(200).json({
+        status: 'success',
+        bases,
+    });
+
+});
+
 const deleteBase = catchAsync(async (req, res, next) => {
 	const { base } = req;
     
@@ -62,5 +82,6 @@ module.exports = {
     getAvailableBase,
     createBase,
     deleteBase,
-    getBaseById
+    getBaseById,
+    updateBases
 }
