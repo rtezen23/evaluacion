@@ -13,7 +13,6 @@ const createFicha = catchAsync(async (req, res, next) => {
         semana_llamada,
         telefono,
         dni_cliente,
-        cuenta_cliente,
         resultado,
         hora_llamada,
         tmo_segundos,
@@ -24,6 +23,7 @@ const createFicha = catchAsync(async (req, res, next) => {
         motivo_no_pago,
         responsabilidad_no_fcr,
         motivo_no_fcr,
+        audio_nombre,
         fecha_monitoreo,
         nombre_monitor,
         rol,
@@ -62,7 +62,6 @@ const createFicha = catchAsync(async (req, res, next) => {
         semana_llamada,
         telefono,
         dni_cliente,
-        cuenta_cliente,
         resultado,
         hora_llamada,
         tmo_segundos,
@@ -73,6 +72,7 @@ const createFicha = catchAsync(async (req, res, next) => {
         motivo_no_pago,
         responsabilidad_no_fcr,
         motivo_no_fcr,
+        audio_nombre,
         fecha_monitoreo,
         nombre_monitor,
         rol,
@@ -122,7 +122,7 @@ const getFichasByUser = catchAsync(async (req, res, next) => {
     const { monitor } = req.params;
 
     const fichas = await Ficha.findAll({
-        where: { supervisor: monitor }
+        where: { nombre_monitor: monitor }
     });
 
     res.status(200).json({

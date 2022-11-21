@@ -64,6 +64,24 @@ const getAllUsers = catchAsync(async (req, res, next) => {
 
 });
 
+const updateUser = catchAsync(async (req, res, next) => {
+	const { password } = req.body;
+    const { username } = req.params;
+
+    const salt = await bcrypt.genSalt(12);
+    const hashPassword = await bcrypt.hash(password, salt);
+
+    const user = await User.findOne({
+        where: { usuario: username }
+    })
+
+    if (!user) return next(new AppError('User not found', 404))
+
+    await user.update({ password: hashPassword });
+
+	res.status(204).json({ status: 'success' });
+});
+
 const checkToken = catchAsync(async (req, res, next) => {
 	const { sessionUser } = req;
 	res.status(200).json({
@@ -76,5 +94,6 @@ module.exports = {
     createUser,
     login,
     getAllUsers,
-    checkToken
+    checkToken,
+    updateUser
 };

@@ -51,8 +51,6 @@ const createBase = catchAsync(async (req, res, next) => {
 
 const updateBases = catchAsync(async (req, res, next) => {
     const { ficha, carterasSelected } = req.body;
-    console.log(ficha)
-    console.log(carterasSelected)
     const bases = await Base.update({
         FICHA: ficha
     },

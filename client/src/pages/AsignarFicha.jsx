@@ -40,8 +40,14 @@ const AsignarFicha = () => {
 
     const handleSubmit = () => {
         axios.patch(BASE_URL, {ficha, carterasSelected: carterasSelected})
-        .then(res => console.log(res.data))
-        .catch(err => console.log(err))
+        .then(res => {
+            alert(`Carteras asignadas a: ${ficha}`)
+            console.log(res.data)
+        })
+        .catch(err => {
+            alert('Error al asignar ficha')
+            console.log(err)
+        })
     }
 
 

@@ -10,7 +10,7 @@
 
 .asignarFicha__select{
     position: relative;
-    z-index: 10;
+    z-index: 2;
     width: 600px;
 }
 

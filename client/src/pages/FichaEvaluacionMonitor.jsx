@@ -1,5 +1,5 @@
 import axios from 'axios';
-import React, { Children } from 'react'
+import React from 'react'
 import { useState } from 'react';
 import { useEffect } from 'react';
 import DataTable from 'react-data-table-component';
@@ -14,6 +14,7 @@ import './fichaEvaluacionTable.css';
 // const URL = 'http://192.168.1.51:4000/api/v1/Reporte';
 const API_URL = `${import.meta.env.VITE_API_URL}api/v1/fichas/`;
 
+
 export const FichaEvaluacionMonitor = ({ monitor }) => {
     const [datosFicha, setDatosFicha] = useState([])
     const [firstDate, setFirstDate] = useState('')
@@ -22,8 +23,9 @@ export const FichaEvaluacionMonitor = ({ monitor }) => {
     const columns = [
         {
             name: 'id',
-            selector: row => <p className='ficha-evaluacion-table__item'>{row.id}</p>,
+            selector: row => row.id,
             sortable: true,
+            grow: .5,
             center: true,
             wrap: true
         },
@@ -44,13 +46,6 @@ export const FichaEvaluacionMonitor = ({ monitor }) => {
         {
             name: 'tramo',
             selector: row => <p className='ficha-evaluacion-table__item'>{row.tramo}</p>,
-            sortable: true,
-            center: true,
-            wrap: true
-        },
-        {
-            name: 'user_agente',
-            selector: row => <p className='ficha-evaluacion-table__item'>{row.user_agente}</p>,
             sortable: true,
             center: true,
             wrap: true
@@ -98,13 +93,6 @@ export const FichaEvaluacionMonitor = ({ monitor }) => {
             wrap: true
         },
         {
-            name: 'cuenta_cliente',
-            selector: row => <p className='ficha-evaluacion-table__item'>{row.cuenta_cliente}</p>,
-            sortable: true,
-            center: true,
-            wrap: true
-        },
-        {
             name: 'resultado',
             selector: row => <p className='ficha-evaluacion-table__item'>{row.resultado}</p>,
             sortable: true,
@@ -135,13 +123,6 @@ export const FichaEvaluacionMonitor = ({ monitor }) => {
         {
             name: 'tipo_gestion',
             selector: row => <p className='ficha-evaluacion-table__item'>{row.tipo_gestion}</p>,
-            sortable: true,
-            center: true,
-            wrap: true
-        },
-        {
-            name: 'perfil_cliente',
-            selector: row => <p className='ficha-evaluacion-table__item'>{row.perfil_cliente}</p>,
             sortable: true,
             center: true,
             wrap: true
@@ -182,6 +163,13 @@ export const FichaEvaluacionMonitor = ({ monitor }) => {
             wrap: true
         },
         {
+            name: 'audio_nombre',
+            selector: row => <p className='ficha-evaluacion-table__item'>{row.audio_nombre}</p>,
+            sortable: true,
+            center: true,
+            wrap: true
+        },
+        {
             name: 'fecha_monitoreo',
             selector: row => <p className='ficha-evaluacion-table__item'>{row.fecha_monitoreo}</p>,
             sortable: true,
@@ -190,7 +178,7 @@ export const FichaEvaluacionMonitor = ({ monitor }) => {
         },
         {
             name: 'nombre_monitor',
-            selector: row => <p className='ficha-evaluacion-table__item'>{row.supervisor}</p>,
+            selector: row => <p className='ficha-evaluacion-table__item'>{row.nombre_monitor}</p>,
             sortable: true,
             center: true,
             wrap: true
@@ -317,7 +305,19 @@ export const FichaEvaluacionMonitor = ({ monitor }) => {
         },
         {
             name: 'calificacion_final',
-            selector: row => <p className='ficha-evaluacion-table__item'>{row.calificacion_final}%</p>,
+            selector: row => <p className='ficha-evaluacion-table__item'>{row.calificacion_final}</p>,
+            center: true,
+            wrap: true
+        },
+        {
+            name: 'observaciones',
+            selector: row => <p className='ficha-evaluacion-table__item'>{row.observaciones}</p>,
+            center: true,
+            wrap: true
+        },
+        {
+            name: 'tipo_ficha',
+            selector: row => <p className='ficha-evaluacion-table__item'>{row.tipo_ficha}</p>,
             center: true,
             wrap: true
         },
@@ -325,11 +325,15 @@ export const FichaEvaluacionMonitor = ({ monitor }) => {
 
     const { inputText, suggestions, setSuggestions, showAll, handleFilter, dateFilter } = useFilter(datosFicha);
 
+    const sortReportesByDate = (a, b) => {
+				return Number(new Date(b.id)) - Number(new Date(a.id));
+	}
+
     const showData = async () => {
 		const response = await fetch(`${API_URL}${monitor}`);
 		const data = await response.json();
-		setDatosFicha(data.fichas);
-        setSuggestions(data.fichas);
+		setDatosFicha(data.fichas.sort(sortReportesByDate));
+        setSuggestions(data.fichas.sort(sortReportesByDate));
 	};
 
     useEffect(() => {

@@ -5,6 +5,7 @@ import DataTable from 'react-data-table-component';
 import { useDispatch, useSelector } from 'react-redux';
 import {setRegisters} from '../store/actions/registers.actions';
 import {getRegisters} from '../store/actions/registers.actions';
+import { checkToken } from '../store/actions/user.actions';
 import axios from 'axios';
 import AsignarFicha from './AsignarFicha';
 
@@ -101,22 +102,20 @@ const columns = [
 		wrap: true,
 		selector: row => row.USUARIO,
 	},
-	{
-		name: 'FICHA',
-		wrap: true,
-		selector: row => row.FICHA,
-	},
 ]
 
 const API_URL = `${import.meta.env.VITE_API_URL}api/v1/base/`;
 
 export const Importacion = () => {
 
+	const isAuth = useSelector(state => state.user.isAuth);
+
   // const [registers, setRegisters] = useState([]);
   const dispatch = useDispatch();
   const registers = useSelector(state => state.registers.base);
 
   const [base, setBase] = useState([]);
+  const [showAsignacion, setShowAsignacion] = useState(false);
   const [isLoading, setisLoading] = useState(false);
 
   const handleFile = () => {
@@ -125,6 +124,7 @@ export const Importacion = () => {
 	.then(res => {
 	  setisLoading(false);
 	  alert('Registros agregados');
+	  setShowAsignacion(true)
 	})
 	.catch(err => {
 		alert('Error al agregar')
@@ -160,6 +160,7 @@ export const Importacion = () => {
 };
 
 useEffect(() => {
+	if (!isAuth) dispatch(checkToken());
 	dispatch(getRegisters());
  }, [])
 
@@ -175,7 +176,7 @@ const paginationOptions = {
     <div>
         <h1 className='importacion-title'>Importar base</h1>
         <div>
-          <label htmlFor="base" className='importacion__label'>Seleccione archivo</label>
+          <label htmlFor="base" className='importacion__label'>Seleccionar archivo</label>
           <input type="file" name="base" id="base" onChange={e => {
             const file = e.target.files[0];
             readExcel(file);
@@ -189,11 +190,11 @@ const paginationOptions = {
 				<h3>
 					Total de registros: {base.length}
 				</h3>
-				<AsignarFicha/>
-			</>
-          ) : ''
-        }
-        <DataTable
+				{
+					showAsignacion && <AsignarFicha/>
+				}
+
+				<DataTable
 					columns={columns}
 					data={base}
 					pagination
@@ -201,7 +202,11 @@ const paginationOptions = {
 					fixedHeader
 					fixedHeaderScrollHeight='600px'
 					title="Registros:"
-				/>
+		/>
+			</>
+          ) : ''
+        }
+        
     </div>
   )
 }

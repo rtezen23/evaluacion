@@ -28,7 +28,7 @@ const Ficha = db.define('ficha', {
         allowNull: true,
     },
     fecha_llamada: {
-        type: DataTypes.DATE,
+        type: DataTypes.STRING,
         allowNull: true,
     },
     semana_llamada: {
@@ -40,10 +40,6 @@ const Ficha = db.define('ficha', {
         allowNull: true,
     },
     dni_cliente: {
-        type: DataTypes.STRING,
-        allowNull: true,
-    },
-    cuenta_cliente: {
         type: DataTypes.STRING,
         allowNull: true,
     },
@@ -84,6 +80,10 @@ const Ficha = db.define('ficha', {
         allowNull: true,
     },
     motivo_no_fcr: {
+        type: DataTypes.STRING,
+        allowNull: true,
+    },
+    audio_nombre: {
         type: DataTypes.STRING,
         allowNull: true,
     },
@@ -176,14 +176,6 @@ const Ficha = db.define('ficha', {
         allowNull: true,
     },
     observaciones: {
-        type: DataTypes.STRING,
-        allowNull: true,
-    },
-    supervisor: {
-        type: DataTypes.STRING,
-        allowNull: true,
-    },
-    tramo_estandar: {
         type: DataTypes.STRING,
         allowNull: true,
     },

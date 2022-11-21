@@ -24,7 +24,8 @@ export const FichaEvaluacionTable = () => {
     const columns = [
         {
             name: 'id',
-            selector: row => <p className='ficha-evaluacion-table__item'>{row.id}</p>,
+            selector: row => row.id,
+            grow: .5,
             sortable: true,
             center: true,
             wrap: true
@@ -46,13 +47,6 @@ export const FichaEvaluacionTable = () => {
         {
             name: 'tramo',
             selector: row => <p className='ficha-evaluacion-table__item'>{row.tramo}</p>,
-            sortable: true,
-            center: true,
-            wrap: true
-        },
-        {
-            name: 'user_agente',
-            selector: row => <p className='ficha-evaluacion-table__item'>{row.user_agente}</p>,
             sortable: true,
             center: true,
             wrap: true
@@ -100,13 +94,6 @@ export const FichaEvaluacionTable = () => {
             wrap: true
         },
         {
-            name: 'cuenta_cliente',
-            selector: row => <p className='ficha-evaluacion-table__item'>{row.cuenta_cliente}</p>,
-            sortable: true,
-            center: true,
-            wrap: true
-        },
-        {
             name: 'resultado',
             selector: row => <p className='ficha-evaluacion-table__item'>{row.resultado}</p>,
             sortable: true,
@@ -137,13 +124,6 @@ export const FichaEvaluacionTable = () => {
         {
             name: 'tipo_gestion',
             selector: row => <p className='ficha-evaluacion-table__item'>{row.tipo_gestion}</p>,
-            sortable: true,
-            center: true,
-            wrap: true
-        },
-        {
-            name: 'perfil_cliente',
-            selector: row => <p className='ficha-evaluacion-table__item'>{row.perfil_cliente}</p>,
             sortable: true,
             center: true,
             wrap: true
@@ -184,6 +164,13 @@ export const FichaEvaluacionTable = () => {
             wrap: true
         },
         {
+            name: 'audio_nombre',
+            selector: row => <p className='ficha-evaluacion-table__item'>{row.audio_nombre}</p>,
+            sortable: true,
+            center: true,
+            wrap: true
+        },
+        {
             name: 'fecha_monitoreo',
             selector: row => <p className='ficha-evaluacion-table__item'>{row.fecha_monitoreo}</p>,
             sortable: true,
@@ -192,7 +179,7 @@ export const FichaEvaluacionTable = () => {
         },
         {
             name: 'nombre_monitor',
-            selector: row => <p className='ficha-evaluacion-table__item'>{row.supervisor}</p>,
+            selector: row => <p className='ficha-evaluacion-table__item'>{row.nombre_monitor}</p>,
             sortable: true,
             center: true,
             wrap: true
@@ -319,12 +306,18 @@ export const FichaEvaluacionTable = () => {
         },
         {
             name: 'calificacion_final',
-            selector: row => <p className='ficha-evaluacion-table__item'>{row.calificacion_final}%</p>,
+            selector: row => <p className='ficha-evaluacion-table__item'>{row.calificacion_final}</p>,
             center: true,
             wrap: true
         },
         {
-            name: 'tipo:ficha',
+            name: 'observaciones',
+            selector: row => <p className='ficha-evaluacion-table__item'>{row.observaciones}</p>,
+            center: true,
+            wrap: true
+        },
+        {
+            name: 'tipo_ficha',
             selector: row => <p className='ficha-evaluacion-table__item'>{row.tipo_ficha}</p>,
             center: true,
             wrap: true

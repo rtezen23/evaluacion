@@ -6,6 +6,7 @@ import { IconContext } from 'react-icons/lib';
 import {BiPowerOff} from 'react-icons/bi';
 import { FiUserPlus } from 'react-icons/fi';
 import { BiImport } from 'react-icons/bi';
+import { FiUsers } from 'react-icons/fi';
 import { SidebarData } from './SidebarData';
 import './sidebar.css';
 import { useDispatch, useSelector } from 'react-redux';
@@ -50,28 +51,43 @@ const Sidebar = () => {
               </Link>
             </li>
             <li className='sidebar-username'>{user?.nombres} {user?.apellidos}</li>
-            {SidebarData.map((item, index) => {
-              return (
-                <li key={index} className={item.cName}>
-                  <Link to={item.path}>
-                    {item.icon}
-                    <span>{item.title}</span>
-                  </Link>
-                </li>
-              );
-            })}
+            
+            {
+              user.cargo === 'monitor' && SidebarData.map((item, index) => {
+                return (
+                  <li key={index} className={item.cName}>
+                    <Link to={item.path}>
+                      {item.icon}
+                      <span>{item.title}</span>
+                    </Link>
+                  </li>
+                );
+              })
+            }
             { user &&
             <>
                   <li className={`nav-text ${user?.cargo !=='admin' ? 'item-hidden' : ''}`}>
                     <Link to='/importacion'>
                       <BiImport className='nav-icon'/>
-                      <span>IMPORTAR</span>
+                      <span>IMPORTAR BASE</span>
                     </Link>
                   </li>
                   <li className={`nav-text ${user?.cargo !=='admin' ? 'item-hidden' : ''}`}>
                     <Link to='/base'>
                       <HiDocumentText className='nav-icon'/>
-                      <span>REPORTE</span>
+                      <span>REGISTRO BASE</span>
+                    </Link>
+                  </li>
+                  <li className={`nav-text ${user?.cargo !=='admin' ? 'item-hidden' : ''}`}>
+                    <Link to='/table'>
+                      <HiDocumentText className='nav-icon'/>
+                      <span>REGISTRO FICHAS</span>
+                    </Link>
+                  </li>
+                  <li className={`nav-text ${user?.cargo !=='admin' ? 'item-hidden' : ''}`}>
+                    <Link to='/users'>
+                      <FiUsers className='nav-icon'/>
+                      <span>LISTA USUARIOS</span>
                     </Link>
                   </li>
                   <li className={`nav-text ${user?.cargo !=='admin' ? 'item-hidden' : ''}`}>

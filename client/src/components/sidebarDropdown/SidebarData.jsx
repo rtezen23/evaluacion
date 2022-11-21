@@ -24,12 +24,7 @@ export const SidebarData = [
     icon: <MdOutlineMonitor className='nav-icon'/>,
     cName: 'nav-text'
   },
-  {
-    title: 'REGISTRO',
-    path: '/table',
-    icon: <HiDocumentText className='nav-icon'/>,
-    cName: 'nav-text'
-  },
+  
   // {
   //   title: 'MONITOREO AUTO',
   //   path: '/',

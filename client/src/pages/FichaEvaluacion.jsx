@@ -14,10 +14,37 @@ import axios from 'axios';
 import { deleteRegister } from '../store/actions/registers.actions';
 import { checkToken } from '../store/actions/user.actions';
 import { FichaEvaluacionMonitor } from './FichaEvaluacionMonitor';
+import { getWeekOfMonth, parseISO, format, isMatch } from 'date-fns';
 
 const FICHAS_URL = `${import.meta.env.VITE_API_URL}api/v1/fichas/`;
 const BASE_URL = `${import.meta.env.VITE_API_URL}api/v1/base/`;
 const CARTERAS_URL = `${import.meta.env.VITE_API_URL}api/v1/carteras/`;
+// check is date has mm/dd/yyyy format
+function isValidFormat(dateString)
+{
+    // First check for the pattern
+    if(!/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(dateString))
+        return false;
+
+    // Parse the date parts to integers
+    var parts = dateString.split("/");
+    var day = parseInt(parts[1], 10);
+    var month = parseInt(parts[0], 10);
+    var year = parseInt(parts[2], 10);
+
+    // Check the ranges of month and year
+    if(year < 1000 || year > 3000 || month == 0 || month > 12)
+        return false;
+
+    var monthLength = [ 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 ];
+
+    // Adjust for leap years
+    if(year % 400 == 0 || (year % 100 != 0 && year % 4 == 0))
+        monthLength[1] = 29;
+
+    // Check the range of the day
+    return day > 0 && day <= monthLength[month - 1];
+};
 
 const optionsTipoLlamada = [
   { label: 'Monitoreo Calidad', value: 'Monitoreo Calidad'},
@@ -243,7 +270,7 @@ export const FichaEvaluacion = () => {
         agente: '',
         mes_llamada: '',
         fecha_llamada: '',
-        semana_llamada: '',
+        semana_llamada: 0,
         telefono: '',
         dni_cliente: '',
         cuenta_cliente: '',
@@ -257,6 +284,7 @@ export const FichaEvaluacion = () => {
         motivo_no_pago: '',
         responsabilidad_no_fcr: '',
         motivo_no_fcr: '',
+        audio_nombre: '',
         fecha_monitoreo: '',
         nombre_monitor: '',
         rol: '',
@@ -353,10 +381,8 @@ export const FichaEvaluacion = () => {
     // set_total_peso(prevState => prevState - cumpleItem.peso)
     // substracting peso to porcentaje if there is a 'Sí cumple' option selected
     for (const key in parentObject) {
-      console.log('adding old peso')
         parentObject[key].forEach(item => {
           if (item.isSelected && item.nombre === 'Sí cumple') {
-            console.log(item)
             setPorcentaje( prevPorcentaje => prevPorcentaje - item.peso);
           }
         })
@@ -366,7 +392,6 @@ export const FichaEvaluacion = () => {
     const newPesoReferencia = total_peso - cumpleItem.peso;
     // Setting new peso and  peso_percent
     for (let i = 0; i < allObjects.length; i++) {
-      console.log('updating peso_percent')
       allObjects[i](prevState => {
         return prevState.map(item => {
           return {...item, peso_percent: Math.round(((item.peso * 100 / newPesoReferencia) + Number.EPSILON) * 100) / 100}
@@ -374,7 +399,6 @@ export const FichaEvaluacion = () => {
       })
     }
     for (let i = 0; i < allObjects.length; i++) {
-      console.log('updating peso')
       allObjects[i](prevState => {
         return prevState.map(item => {
           return {...item, peso: Math.round(((total_peso * item.peso_percent / 100) + Number.EPSILON) * 100) / 100}
@@ -398,10 +422,8 @@ export const FichaEvaluacion = () => {
 
     // adding new peso to porcentaje if there is a 'Sí cumple' option selected
     for (const key in parentObject) {
-      console.log('adding new peso')
       parentObject[key].forEach(item => {
         if (item.isSelected && item.nombre === 'Sí cumple') {
-          console.log(item)
           setPorcentaje( prevPorcentaje => prevPorcentaje + item.peso);
         }
       })
@@ -410,15 +432,12 @@ export const FichaEvaluacion = () => {
   }
 
   const handleTotalPorcentaje = (e, state, setState, total_peso, set_total_peso, setObjects, ref, setSelected, parentObject) => {
-    console.log(parentObject)
     setSelected(e)
     handleSelectOption(e, ref)
     if (e.value.nombre === 'No aplica') {
-      console.log('si')
       setNewPesos(e, state, setState, total_peso, set_total_peso, setObjects, parentObject);
     }
     else {
-      console.log('otro')
       // Recorremos en array de objetos para restar la cantidad si habia un elemento seleccionado antes
       state.forEach(item => {
         if (item.isSelected) {
@@ -522,7 +541,6 @@ if (!user) return
   //     // REGISTROS DE LA IMPORTACION QUE CORRESPONDEN AL ASESOR
   //     axios.get(BASE_URL+user?.usuario)
   //     .then(res2 => {
-  //       console.log(res2.data.userBase)
   //       setAssigned(res2.data.userBase);
   //       setInfoFicha(res2.data.userBase?.FICHA === '1' ? infoFicha01 : infoFicha02);
   //       axios.get(`${CARTERAS_URL}${res2.data.userBase?.CARTERA}`)
@@ -538,38 +556,38 @@ if (!user) return
   //   .catch(err => console.log(err))
   // })
   // .catch(err => console.log(err))
-    const getCurrentWeek = () => {
-      console.log('firstWeekday', firstWeekday)
-      const offsetDate = 9 + firstWeekday - 2;
-      console.log('offsetDate', offsetDate)
-      return Math.floor(offsetDate / 7);
-    }
+//     const getCurrentWeek = () => {
+//       console.log('firstWeekday', firstWeekday)
+//       const offsetDate = 9 + firstWeekday - 2;
+//       console.log('offsetDate', offsetDate)
+//       return Math.floor(offsetDate / 7);
+//     }
 
-    function getWeekOfMonth(date) {
-      console.log(date)
-      let adjustedDate = date.getDate()+ date.getDay();
-      let prefixes = ['0', '1', '2', '3', '4', '5'];
-      return (parseInt(prefixes[0 | adjustedDate / 7])+1);
-  }
+//     function getWeekOfMonth(date) {
+//       console.log(date)
+//       let adjustedDate = date.getDate()+ date.getDay();
+//       let prefixes = ['0', '1', '2', '3', '4', '5'];
+//       return (parseInt(prefixes[0 | adjustedDate / 7])+1);
+//   }
 
-  function getNumberOfWeek() {
-    const today = new Date();
-    const firstDayOfYear = new Date(today.getFullYear(), 0, 1);
-    const pastDaysOfYear = (today - firstDayOfYear) / 86400000;
-    return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
-}
+//   function getNumberOfWeek() {
+//     const today = new Date();
+//     const firstDayOfYear = new Date(today.getFullYear(), 0, 1);
+//     const pastDaysOfYear = (today - firstDayOfYear) / 86400000;
+//     return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
+// }
 
-const anotherFunction = () => {
-  currentDate = new Date();
+// const anotherFunction = () => {
+//   currentDate = new Date();
 
-    startDate = new Date(currentDate.getFullYear(), 0, 1);
-    let days = Math.floor((currentDate - startDate) /
-        (24 * 60 * 60 * 1000));
+//     startDate = new Date(currentDate.getFullYear(), 0, 1);
+//     let days = Math.floor((currentDate - startDate) /
+//         (24 * 60 * 60 * 1000));
          
-    let weekNumber = Math.ceil(days / 7);
+//     let weekNumber = Math.ceil(days / 7);
  
-    console.log(`Week number of ${currentDate} is ${weekNumber}`);
-}
+//     console.log(`Week number of ${currentDate} is ${weekNumber}`);
+// }
 
 // returns 45
 // Date.prototype.getWeek = function() {
@@ -592,15 +610,15 @@ const anotherFunction = () => {
 //   return Math.floor(offsetDate / 7);
 // }
 
-function getWeekOfMonth(fecha) {
-  let date = new Date(fecha);
-  let firstWeekDay = new Date((date.getFullYear()), date.getMonth(), 1).getDay();
-  if (firstWeekDay > 0) firstWeekDay = 6;
-  let offsetDate = date.getDate() + firstWeekDay - 1;
-  return Math.floor(offsetDate / 7);
-}
+// function getWeekOfMonth(fecha) {
+//   let date = new Date(fecha);
+//   let firstWeekDay = new Date((date.getFullYear()), date.getMonth(), 1).getDay();
+//   if (firstWeekDay > 0) firstWeekDay = 6;
+//   let offsetDate = date.getDate() + firstWeekDay - 1;
+//   return Math.floor(offsetDate / 7);
+// }
 
-    console.log(getWeekOfMonth('11/15/2022'))
+    getWeekOfMonth(new Date(), { weekStartsOn: 1 })
 
     // REGISTROS DE LA IMPORTACION QUE CORRESPONDEN AL ASESOR
     axios.get(BASE_URL+user?.usuario)
@@ -630,19 +648,19 @@ function getWeekOfMonth(fecha) {
   })
 	}, [isAuth, dispatch, user]);
 
-        let timer;
-        // useEffect(()=> {
-        //     timer = setInterval(() => {
-        //       setSegundos(prevSegundos => prevSegundos + 1);
-        
-        //       if (segundos === 59) {
-        //         setMinutos(prevMinutos => prevMinutos + 1);
-        //         setSegundos(0);
-        //       }
-        //     }, 1000);
-        
-        //     return () => clearInterval(timer)
-        // })
+  let timer;
+  useEffect(()=> {
+      timer = setInterval(() => {
+        setSegundos(prevSegundos => prevSegundos + 1);
+  
+        if (segundos === 59) {
+          setMinutos(prevMinutos => prevMinutos + 1);
+          setSegundos(0);
+        }
+      }, 1000);
+  
+      return () => clearInterval(timer)
+  },[])
   
   useEffect(()=>{
     setInfoData()
@@ -651,32 +669,70 @@ function getWeekOfMonth(fecha) {
   useEffect(()=>{
     porcentaje
   },[aperturaState])
-  console.log(assigned)
+  
   const handleCancel = () => {
     window.location.reload();
     clearInterval(timer)
   }
   const [ tramoSegundos, setTramoSegundos ] = useState(0);
+  const [ observaciones, setObservaciones ] = useState('');
+
+
 
   const getFechaLlamada = (date) => {
           let [dateValues, timeValues] = date.split(' ');
-          const indiceDia = dateValues.indexOf('/');
-          const dia = dateValues.slice(0,indiceDia)
-          const indiceMes = dateValues.lastIndexOf('/');
-          const mes = dateValues.slice(indiceDia+1,indiceMes)
-          const año = dateValues.slice(indiceMes+1);
-          dateValues = `${mes.length === 1 ? `0${mes}` : mes}/${dia.length === 1 ? `0${dia}` : dia}/${año}`;
           
-          const [month, day, year] = dateValues.split('/');
-          const [hours, minutes, seconds] = timeValues.split(':');
+          // dateValues = formatDate(date);
+          // const [month, day, year] = dateValues.split('/');
+          // const [hours, minutes, seconds] = timeValues.split(':');
 
-          return new Date(
-            new Date(+year, month - 1, +day, +hours, +minutes, +seconds)
-              .toString()
-          ).toISOString();
+          // return new Date(`${dateValues} ${timeValues}`).toLocaleString('es-PE')
+
+          // return new Date(
+          //   new Date(year, month - 1, day, hours, minutes, seconds)
+          //     .toString()
+          // ).toISOString();
           // return new Date(stringFecha).toLocaleString();
   }
-  console.log(getFechaLlamada('17/10/2022 10:25:59'))
+
+  // console.log(getFechaLlamada('17/10/2022 08:16:05'))
+  // console.log(isValidDate('30/02/2022'))
+  
+
+  // console.log(format())
+
+  // Validate if new Date() isnt throwing an error
+  function isValidDate(d) {
+    return d instanceof Date && !isNaN(d);
+  }
+
+  const formatDate = (fecha) => {
+      let [dateValues, timeValues] = fecha.split(' ');
+      const indiceDia = dateValues.indexOf('/');
+      const dia = dateValues.slice(0,indiceDia)
+      const indiceMes = dateValues.lastIndexOf('/');
+      const mes = dateValues.slice(indiceDia+1,indiceMes)
+      const año = dateValues.slice(indiceMes+1);
+      return `${mes.length === 1 ? `0${mes}` : mes}/${dia.length === 1 ? `0${dia}` : dia}/${año}`;
+  }
+
+  formatDate('05/30/2022')
+
+// const formatted = format(new Date('17/10/2022'), 'yyyy/MM/dd');
+  // console.log(isMatch(formatted, 'yyyy/dd/MM'));
+
+  const getTime = (fecha) => {
+    let [dateValues, timeValues] = fecha.split(' ');
+    return timeValues;
+  }
+
+  const getDate = (fecha) => {
+    let [dateValues, timeValues] = fecha.split(' ');
+    return dateValues;
+  }
+
+  
+
   const handleSubmit = (e) => {
     e.preventDefault();
     const endTime = new Date();
@@ -692,23 +748,36 @@ function getWeekOfMonth(fecha) {
     
     
     // SETTING OTHER VALUES
-    fichaDatos.calificacion_final = porcentaje;
+    fichaDatos.calificacion_final = `${porcentaje}%`;
     fichaDatos.id_evaluacion = assigned.id;
     fichaDatos.cartera = infoCartera.cartera;
     fichaDatos.tramo = infoCartera.tramo;
     fichaDatos.agente = assigned.ASESOR;
     fichaDatos.mes_llamada = new Date().toLocaleString('es-PE', { month: 'long' });
-    fichaDatos.fecha_llamada = getFechaLlamada(assigned.FECHAGEST);
+    fichaDatos.fecha_llamada = getDate(assigned.FECHAGEST);
+    fichaDatos.hora_llamada = getTime(assigned.FECHAGEST);
+    const semana = getWeekOfMonth(new Date(formatDate(assigned.FECHAGEST)), { weekStartsOn: 1 })
+    fichaDatos.semana_llamada = `semana 0${semana}`;
+    
     fichaDatos.telefono = assigned.ID_CONT;
     fichaDatos.dni_cliente = assigned.IDENTIFICADOR;
+    fichaDatos.resultado = assigned.EFECTO;
     fichaDatos.tmo_segundos = tramoSegundos;
+
+    //audio
+    // const audioName = audioRef.current?.files[0]?.name;
+    // const datIndex = audioName?.indexOf('.');
+    // const audioText = audioName?.slice(0, datIndex);
+    fichaDatos.audio_nombre = audioRef.current?.files[0]?.name;
+
     fichaDatos.fecha_monitoreo = new Date().toLocaleString('es-PE');
-    fichaDatos.supervisor= user.nombres;
+    fichaDatos.nombre_monitor = user.usuario;
     fichaDatos.rol= user.cargo;
     fichaDatos.alerta = fichaDatos.alerta ? 'SI' : 'NO'
     fichaDatos.hora_inicio = startTime.getHours() + ":" + `${startTime.getMinutes().toString().length===1 ? `0${startTime.getMinutes()}` : startTime.getMinutes()}` + ":" + `${startTime.getSeconds().toString().length===1 ? `0${startTime.getSeconds()}` : startTime.getSeconds()}`;
     fichaDatos.hora_fin = endTime.getHours() + ":" + `${endTime.getMinutes().toString().length===1 ? `0${endTime.getMinutes()}` : endTime.getMinutes()}` + ":" + `${endTime.getSeconds().toString().length===1 ? `0${endTime.getSeconds()}` : endTime.getSeconds()}`;
     fichaDatos.duracion_monitoreo = (minuteDifference * 60) + Math.round(difference);
+    fichaDatos.observaciones = observaciones;
     fichaDatos.tipo_ficha = assigned.FICHA;
     // fichaDatos.duracion_monitoreo = minutos * 60 +  segundos + 1;
 
@@ -716,9 +785,12 @@ function getWeekOfMonth(fecha) {
     .then(res => {
       dispatch(deleteRegister(assigned?.id));
         alert('Ficha agregada, procediendo a la siguiente');
-        // window.location.reload();
+        window.location.reload();
     })
-    .catch(err => console.log(err))
+    .catch(err =>{
+      alert('Error al agregar')
+      console.log(err)
+    })
   }
   // audio
   const [audioFile, setAudioFile] = useState('')
@@ -726,6 +798,8 @@ function getWeekOfMonth(fecha) {
   const handleAudio = e => {
     setAudioFile(URL.createObjectURL(e.target.files[0]));
   }
+
+    
 
   //  reset input value, not working
   // const resetAudioInput = () => {
@@ -832,7 +906,7 @@ function getWeekOfMonth(fecha) {
         {
           !user ? <p>Cargando...</p>
           : <div className='ficha-modelo__01-main'>
-          <h2 className='ficha-modelo__01-main__title'>EVALUACIÓN FICHA {assigned?.FICHA}</h2>
+          <h2 className='ficha-modelo__01-main__title'>EVALUACIÓN {assigned?.FICHA}</h2>
           <p className='ficha-modelo__01-main__time'>
                 {/* {horas < 10 ? '0' + horas : horas}: */}
                 {minutos < 10 ? '0' + minutos : minutos}:
@@ -1057,14 +1131,14 @@ function getWeekOfMonth(fecha) {
             </div>
     }
             <div>
-              <textarea className='ficha-modelo__02-textarea' placeholder='Observación'></textarea>
+              <textarea className='ficha-modelo__02-textarea' value={observaciones} onChange={e => setObservaciones(e.target.value)} placeholder='Observación'/>
             </div>
             {/* <span className='ficha-modelo__porcentaje-number'>{porcentaje}%</span> */}
           </div>
         </div>
       </form>
       {
-        user && <FichaEvaluacionMonitor monitor={user.nombres} />
+        user && <FichaEvaluacionMonitor monitor={user.usuario} />
       }
     </section>
   )
