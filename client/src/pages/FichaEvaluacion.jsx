@@ -57,7 +57,8 @@ const optionsTipoGestion = [
   { label: 'Preventiva', value: 'Preventiva'},
   { label: 'Sin compromiso', value: 'Sin compromiso'},
   { label: 'Promesa de pago - Negativa', value: 'Promesa de pago - Negativa'},
-  { label: 'Promesa de pago - Predispuesto', value: 'Promesa de pago - Predispuesto'}
+  { label: 'Promesa de pago - Predispuesto', value: 'Promesa de pago - Predispuesto'},
+  { label: 'No evaluable', value: 'No evaluable'}
 ]
 
 const optionsMotivoNoPago = [
@@ -114,19 +115,6 @@ const optionsResponsableNoFCR = [
   { label: 'Cliente', value: 'Cliente'},
   { label: 'SI_FCR', value: 'SI_FCR'},
 ]
-
-// const optionsMotivoNoFCR = [
-//   { label: 'No rebate las veces establecidas (insistencia)', value: 'No rebate las veces establecidas (insistencia)' },
-//   { label: 'No rebate objeciones', value: 'No rebate objeciones' },
-//   { label: 'No exige el pago (urgencia)', value: 'No exige el pago (urgencia)' },
-//   { label: 'No exige el pago de manera correcta', value: 'No exige el pago de manera correcta' },
-//   { label: 'No concientiza al cliente', value: 'No concientiza al cliente' },
-//   { label: 'As - corta llamada', value: 'As - corta llamada' },
-//   { label: 'Cliente corta llamada', value: 'Cliente corta llamada' },
-//   { label: 'Asesor realiza gestión correcta', value: 'Asesor realiza gestión correcta' },
-//   { label: 'Cliente predispuesto', value: 'Cliente predispuesto' },
-//   { label: 'Asesor logra pdp correctamente', value: 'Asesor logra pdp correctamente' },
-// ]
 
 const optionsMotivoNoFCR = {
   'Asesor': [
@@ -267,19 +255,18 @@ export const FichaEvaluacion = () => {
         id_evaluacion: '',
         cartera: '', 
         tramo: '',
-        agente: '',
         mes_llamada: '',
         fecha_llamada: '',
         semana_llamada: 0,
         telefono: '',
         dni_cliente: '',
-        cuenta_cliente: '',
+        // cuenta_cliente: '',
         resultado: '',
         hora_llamada: '',
         tmo_segundos: 0,
         tipo_llamada: '',
         tipo_gestion: '',
-        alerta: false,
+        alerta: 'NO',
         descripcion_alerta: '',
         motivo_no_pago: '',
         responsabilidad_no_fcr: '',
@@ -308,210 +295,183 @@ export const FichaEvaluacion = () => {
         registro_gestiones_62: '',
         calificacion_final: '',
         observaciones: '',
-        supervisor: '',
-        tramo_estandar: '',
+        // supervisor: '',
+        // tramo_estandar: '',
         tipo_ficha: '',
   })
 
-  // state => arreglo de todos los options que hay en un select
-  // const setNewPesos = (e, state, setState, total_peso, set_total_peso, allObjects) => {
+  // ====================== OLD WAY TO GET NEW PESOS AND HANDLE PERCENT===========================
+  //==============================================================================================
+  // const setNewPesos = (e, state, setState, total_peso, set_total_peso, allObjects, parentObject) => {
   //   // Restar % actual al % total
   //   const cumpleItem = state.find(item => item.nombre === 'Sí cumple');
   //   // set_total_peso(prevState => prevState - cumpleItem.peso)
+  //   // subtracting peso to porcentaje if there is a 'Sí cumple' option selected
+  //   for (const key in parentObject) {
+  //       parentObject[key].forEach(item => {
+  //         if (item.isSelected && item.nombre === 'Sí cumple') {
+  //           setPorcentaje( prevPorcentaje => prevPorcentaje - item.peso);
+  //         }
+  //       })
+  //   }
+    
+  //   // Subtracting peso from current total_peso to get new values
   //   const newPesoReferencia = total_peso - cumpleItem.peso;
-  //   allObjects.forEach(setState => {
-  //     setState(prevState => {
+  //   // Setting new peso and  peso_percent
+  //   for (let i = 0; i < allObjects.length; i++) {
+  //     allObjects[i](prevState => {
   //       return prevState.map(item => {
   //         return {...item, peso_percent: Math.round(((item.peso * 100 / newPesoReferencia) + Number.EPSILON) * 100) / 100}
   //       })
-  //     });
-  //     setState(prevState => {
+  //     })
+  //   }
+  //   for (let i = 0; i < allObjects.length; i++) {
+  //     allObjects[i](prevState => {
   //       return prevState.map(item => {
   //         return {...item, peso: Math.round(((total_peso * item.peso_percent / 100) + Number.EPSILON) * 100) / 100}
   //       })
-  //     });
-  //   })
-  // }
-  // const handleTotalPorcentaje = (e, state, setState, total_peso, set_total_peso, setObjects, ref) => {
-  //   setApertura01(JSON.parse(e.target.value).nombre)
-  //   // handleSelectOption(e, ref)
-  //   // if (e.value.nombre === 'No aplica') {
-  //   //   setNewPesos(e, state, setState, total_peso, set_total_peso, setObjects);
-  //   // }
-  //   handleSelectOption(e, ref)
-  //   if (e.target.value.nombre === 'No aplica') {
-  //     setNewPesos(e, state, setState, total_peso, set_total_peso, setObjects);
+  //     })
   //   }
-  //   // Recorremos en array de objetos para restar la cantidad si habia un elemento seleccionado antes
-  //   state.forEach(item => {
-  //     if (item.isSelected) {
-  //       // const pesoDecimal = total_peso * item.peso_percent / 100;
-  //       // const peso = Math.round(pesoDecimal);
-  //       setPorcentaje( prevPorcentaje => prevPorcentaje - item.peso);
-  //     }
-  //   })
+    
+
+  //   // allObjects.forEach(setState => {
+  //   //   setState(prevState => {
+  //   //     return prevState.map(item => {
+  //   //       return {...item, peso_percent: Math.round(((item.peso * 100 / newPesoReferencia) + Number.EPSILON) * 100) / 100}
+  //   //     })
+  //   //   });
+  //   //   setState(prevState => {
+  //   //     return prevState.map(item => {
+  //   //       return {...item, peso: Math.round(((total_peso * item.peso_percent / 100) + Number.EPSILON) * 100) / 100}
+  //   //     })
+  //   //   });
+  //   // })
+
+  //   // adding new peso to porcentaje if there is a 'Sí cumple' option selected
+  //   for (const key in parentObject) {
+  //     parentObject[key].forEach(item => {
+  //       if (item.isSelected && item.nombre === 'Sí cumple') {
+  //         setPorcentaje( prevPorcentaje => prevPorcentaje + item.peso);
+  //       }
+  //     })
+  //   }
+
+  // }
+
+  // const handleTotalPorcentaje = (e, state, setState, total_peso, set_total_peso, setObjects, ref, setSelected, parentObject) => {
+  //   setSelected(e)
+  //   handleSelectOption(e, ref)
+  //   if (e.value.nombre === 'No aplica') {
+  //     setNewPesos(e, state, setState, total_peso, set_total_peso, setObjects, parentObject);
+  //   }
+  //   else {
+  //     // Recorremos en array de objetos para restar la cantidad si habia un elemento seleccionado antes
+  //     state.forEach(item => {
+  //       if (item.isSelected) {
+  //         // const pesoDecimal = total_peso * item.peso_percent / 100;
+  //         // const peso = Math.round(pesoDecimal);
+  //         setPorcentaje( prevPorcentaje => prevPorcentaje - item.peso);
+  //       }
+  //     })
+  //     // Sumamos la cantidad correspondiente del elemento seleccionado al % total
+  //     // setPorcentaje( prevPorcentaje => {
+  //     //   const pesoDecimal = total_peso * e.value.peso_percent / 100;
+  //     //   const peso = Math.round(pesoDecimal);
+  //     //   return prevPorcentaje +  e.value.peso
+  //     // })
+  //     setPorcentaje( prevPorcentaje => prevPorcentaje +  e.value.peso)
+  //   }
 
   //   // Recorremos el arreglo de objetos para asignar el nuevo elemento seleccionado dependiendo de la opcion elegida
-  //   // setState(prevState => prevState.map(item => {return{...item, isSelected: item.nombre === e.value.nombre}}));
-  //   setState(prevState => prevState.map(item => {return{...item, isSelected: item.nombre === (JSON.parse(e.target.value)).nombre}}));
+  //   setState(prevState => prevState.map(item => {return{...item, isSelected: item.nombre === e.value.nombre}}));
 
-  //   // Sumamos la cantidad correspondiente del elemento seleccionado al % total
-  //   // setPorcentaje( prevPorcentaje => {
-  //   //   const pesoDecimal = total_peso * e.value.peso_percent / 100;
-  //   //   const peso = Math.round(pesoDecimal);
-  //   //   return prevPorcentaje +  e.value.peso
-  //   // })
-  //   setPorcentaje( prevPorcentaje => prevPorcentaje +  (JSON.parse(e.target.value)).peso)
   // }
 
-  // const handleSelectOption = (data) => {
-  //   const newValue = JSON.parse(data.target.value)
-  //   setFichaDatos(prevFichaDatos => {
-  //     return {
-  //         ...prevFichaDatos,
-  //         // [ref.current.props.name]: data.label,
-  //         [data.target.name]: newValue.nombre,
-  //     }
-  // })
-  // }
+  const [tipoGestionSelect, setTipoGestionSelect] = useState('')
 
-  const setNewPesos = (e, state, setState, total_peso, set_total_peso, allObjects, parentObject) => {
-    // Restar % actual al % total
-    const cumpleItem = state.find(item => item.nombre === 'Sí cumple');
-    // set_total_peso(prevState => prevState - cumpleItem.peso)
-    // substracting peso to porcentaje if there is a 'Sí cumple' option selected
-    for (const key in parentObject) {
-        parentObject[key].forEach(item => {
-          if (item.isSelected && item.nombre === 'Sí cumple') {
-            setPorcentaje( prevPorcentaje => prevPorcentaje - item.peso);
-          }
-        })
-    }
-    
-    // Substracting peso from current total_peso to get new values
-    const newPesoReferencia = total_peso - cumpleItem.peso;
-    // Setting new peso and  peso_percent
-    for (let i = 0; i < allObjects.length; i++) {
-      allObjects[i](prevState => {
-        return prevState.map(item => {
-          return {...item, peso_percent: Math.round(((item.peso * 100 / newPesoReferencia) + Number.EPSILON) * 100) / 100}
-        })
-      })
-    }
-    for (let i = 0; i < allObjects.length; i++) {
-      allObjects[i](prevState => {
-        return prevState.map(item => {
-          return {...item, peso: Math.round(((total_peso * item.peso_percent / 100) + Number.EPSILON) * 100) / 100}
-        })
-      })
-    }
-    
-
-    // allObjects.forEach(setState => {
-    //   setState(prevState => {
-    //     return prevState.map(item => {
-    //       return {...item, peso_percent: Math.round(((item.peso * 100 / newPesoReferencia) + Number.EPSILON) * 100) / 100}
-    //     })
-    //   });
-    //   setState(prevState => {
-    //     return prevState.map(item => {
-    //       return {...item, peso: Math.round(((total_peso * item.peso_percent / 100) + Number.EPSILON) * 100) / 100}
-    //     })
-    //   });
-    // })
-
-    // adding new peso to porcentaje if there is a 'Sí cumple' option selected
-    for (const key in parentObject) {
-      parentObject[key].forEach(item => {
-        if (item.isSelected && item.nombre === 'Sí cumple') {
-          setPorcentaje( prevPorcentaje => prevPorcentaje + item.peso);
-        }
-      })
-    }
-
-  }
-
-  const handleTotalPorcentaje = (e, state, setState, total_peso, set_total_peso, setObjects, ref, setSelected, parentObject) => {
-    setSelected(e)
-    handleSelectOption(e, ref)
-    if (e.value.nombre === 'No aplica') {
-      setNewPesos(e, state, setState, total_peso, set_total_peso, setObjects, parentObject);
-    }
-    else {
-      // Recorremos en array de objetos para restar la cantidad si habia un elemento seleccionado antes
-      state.forEach(item => {
-        if (item.isSelected) {
-          // const pesoDecimal = total_peso * item.peso_percent / 100;
-          // const peso = Math.round(pesoDecimal);
-          setPorcentaje( prevPorcentaje => prevPorcentaje - item.peso);
-        }
-      })
-      // Sumamos la cantidad correspondiente del elemento seleccionado al % total
-      // setPorcentaje( prevPorcentaje => {
-      //   const pesoDecimal = total_peso * e.value.peso_percent / 100;
-      //   const peso = Math.round(pesoDecimal);
-      //   return prevPorcentaje +  e.value.peso
-      // })
-      setPorcentaje( prevPorcentaje => prevPorcentaje +  e.value.peso)
-    }
-
-    // Recorremos el arreglo de objetos para asignar el nuevo elemento seleccionado dependiendo de la opcion elegida
-    setState(prevState => prevState.map(item => {return{...item, isSelected: item.nombre === e.value.nombre}}));
-
-  }
-
+  console.log(tipoGestionSelect)
   const handleSelectOption = (data, ref) => {
     setFichaDatos(prevFichaDatos => {
       return {
           ...prevFichaDatos,
           [ref.current.props.name]: data.label,
       }
-  })
+    })
+    if (ref.current.props.name === 'tipo_gestion') {
+      setTipoGestionSelect({label: data.label, value: data.value});
+    }
+    if (data.label === 'No evaluable' && ref.current.props.name === 'tipo_llamada') {
+      setNoEvaluableOptions()
+      setTipoGestionSelect({label: 'No evaluable', value: 'No evaluable'})
+      setFichaDatos(prevFichaDatos => {
+        return {
+            ...prevFichaDatos,
+            tipo_gestion: 'No evaluable',
+        }
+      })
+    }
   }
+
+  // Set No aplica to all Select items
+  const setNoEvaluableOptions = () => {
+    setSelectedAperturaState11({label: 'No aplica', value: 'No aplica'})
+    setSelectedAperturaState12({label: 'No aplica', value: 'No aplica'})
+    setSelectedAperturaState13({label: 'No aplica', value: 'No aplica'})
+    setSelectedIndagacionState21({label: 'No aplica', value: 'No aplica'})
+    setSelectedIndagacionState22({label: 'No aplica', value: 'No aplica'})
+    setSelectedIndagacionState23({label: 'No aplica', value: 'No aplica'})
+    setSelectedManejoState31({label: 'No aplica', value: 'No aplica'})
+    setSelectedManejoState32({label: 'No aplica', value: 'No aplica'})
+    setSelectedCierreState41({label: 'No aplica', value: 'No aplica'})
+    setSelectedCierreState42({label: 'No aplica', value: 'No aplica'})
+    setSelectedHabilidadesState51({label: 'No aplica', value: 'No aplica'})
+    setSelectedHabilidadesState52({label: 'No aplica', value: 'No aplica'})
+    setSelectedHabilidadesState53({label: 'No aplica', value: 'No aplica'})
+    setSelectedHerramientasState61({label: 'No aplica', value: 'No aplica'})
+    setSelectedHerramientasState62({label: 'No aplica', value: 'No aplica'})
+    
+    
+    setFichaDatos( prevFichaDatos => {
+      return {
+        ...prevFichaDatos,
+        saludo_11: 'No aplica',
+        contactar_con_persona_12: 'No aplica',
+        identificacion_gestor_13: 'No aplica',
+        brindar_informacion_21: 'No aplica',
+        indagar_motivo_no_pago_22: 'No aplica',
+        asesorar_23: 'No aplica',
+        mantiene_sentido_urgencia_31: 'No aplica',
+        perseverancia_objetivo_32: 'No aplica',
+        reafirmar_acuerdos_41: 'No aplica',
+        despedida_cliente_42: 'No aplica',
+        escucha_activa_51: 'No aplica',
+        comunicacion_cliente_52: 'No aplica',
+        amabilidad_cliente_53: 'No aplica',
+        uso_herramientas_61: 'No aplica',
+        registro_gestiones_62: 'No aplica',
+        calificacion_final: 'No aplica',
+      }
+    } )
+  }
+  
+
   const handleCheckboxOption = (e) => {
     setShowMotivoAlerta(e.target.checked);
     setFichaDatos(prevFichaDatos => {
       return {
           ...prevFichaDatos,
-          [e.target.name]: e.target.checked
+          [e.target.name]: e.target.checked ? 'SI' : 'NO'
       }
   })
   }
-  // handle select options
-  // const setInfoData = () => {
-  //   setAperturaState(infoFichaNew[0]);
-  //   setAperturaState11(infoFicha.apertura?.apertura11);
-  //   setAperturaState12(infoFicha.apertura?.apertura12);
-  //   setAperturaState12(infoFicha.apertura?.apertura12);
-  //   setAperturaState13(infoFicha.apertura?.apertura13);
-  //   setAperturaState13(infoFicha.apertura?.apertura13);
-  //   setAperturaPesoTotal(infoFicha.apertura?.total_peso);
-  //   setAperturaPesoTotal(infoFicha.apertura?.total_peso);
-  //   setIndagacionState21(infoFicha.indagacion?.indagacion21);
-  //   setIndagacionState22(infoFicha.indagacion?.indagacion22);
-  //   setIndagacionState23(infoFicha.indagacion?.indagacion23);
-  //   setIndagacionPesoTotal(infoFicha.indagacion?.total_peso);
-  //   setManejoState31(infoFicha.manejo?.manejo31);
-  //   setManejoState32(infoFicha.manejo?.manejo32);
-  //   setManejoPesoTotal(infoFicha.manejo?.total_peso);
-  //   setCierreState41(infoFicha.cierre?.cierre41);
-  //   setCierreState42(infoFicha.cierre?.cierre42);
-  //   setCierrePesoTotal(infoFicha.cierre?.total_peso);
-  //   setHabilidadesState51(infoFicha.habilidades?.habilidades51);
-  //   setHabilidadesState52(infoFicha.habilidades?.habilidades52);
-  //   setHabilidadesState53(infoFicha.habilidades?.habilidades53);
-  //   setHabilidadesPesoTotal(infoFicha.habilidades?.total_peso);
-  //   setHerramientasState61(infoFicha.herramientas?.herramientas61);
-  //   setHerramientasState62(infoFicha.herramientas?.herramientas62);
-  //   setHerramientasPesoTotal(infoFicha.herramientas?.total_peso);
-  // }
+  
   const setInfoData = () => {
-    setAperturaState(infoFicha[0]);
-    setIndagacionState(infoFicha[1]);
-    setManejoState(infoFicha[2]);
-    setCierreState(infoFicha[3]);
-    setHabilidadesState(infoFicha[4]);
-    setHerramientasState(infoFicha[5]);
+    // setAperturaState(infoFicha[0]);
+    // setIndagacionState(infoFicha[1]);
+    // setManejoState(infoFicha[2]);
+    // setCierreState(infoFicha[3]);
+    // setHabilidadesState(infoFicha[4]);
+    // setHerramientasState(infoFicha[5]);
   }
 
   const [ datosBase, setDatosBase ] = useState([]);
@@ -531,92 +491,7 @@ export const FichaEvaluacion = () => {
 if (!user) return
 
     setStartTime(new Date());
-    //IMPORTACION DE TODA LA BASE (unnecesary)
-    // axios.get(BASE_URL)
-  //   .then(res => {
-  //     // REGISTROS TOTALES DE LA IMPORTACION
-  //     // setInfoFicha(prevInfoFicha => {return { ...prevInfoFicha, ficha}});
-  //     setDatosBase(res.data.base);
-
-  //     // REGISTROS DE LA IMPORTACION QUE CORRESPONDEN AL ASESOR
-  //     axios.get(BASE_URL+user?.usuario)
-  //     .then(res2 => {
-  //       setAssigned(res2.data.userBase);
-  //       setInfoFicha(res2.data.userBase?.FICHA === '1' ? infoFicha01 : infoFicha02);
-  //       axios.get(`${CARTERAS_URL}${res2.data.userBase?.CARTERA}`)
-  //         .then(res3 => {
-  //           // setDatosCarteras(res3.data.carteraFound);
-  //           // handleCarteras(res.data.carteras);
-  //           setInfoCartera(res3.data.carteraFound);
-  //         })
-  //         .catch(err => console.log(err))
-  //       // ASIGNAR OPCIONES A LOS SELECT POR LA FICHA 
-  //       setInfoData();
-  //     })
-  //   .catch(err => console.log(err))
-  // })
-  // .catch(err => console.log(err))
-//     const getCurrentWeek = () => {
-//       console.log('firstWeekday', firstWeekday)
-//       const offsetDate = 9 + firstWeekday - 2;
-//       console.log('offsetDate', offsetDate)
-//       return Math.floor(offsetDate / 7);
-//     }
-
-//     function getWeekOfMonth(date) {
-//       console.log(date)
-//       let adjustedDate = date.getDate()+ date.getDay();
-//       let prefixes = ['0', '1', '2', '3', '4', '5'];
-//       return (parseInt(prefixes[0 | adjustedDate / 7])+1);
-//   }
-
-//   function getNumberOfWeek() {
-//     const today = new Date();
-//     const firstDayOfYear = new Date(today.getFullYear(), 0, 1);
-//     const pastDaysOfYear = (today - firstDayOfYear) / 86400000;
-//     return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
-// }
-
-// const anotherFunction = () => {
-//   currentDate = new Date();
-
-//     startDate = new Date(currentDate.getFullYear(), 0, 1);
-//     let days = Math.floor((currentDate - startDate) /
-//         (24 * 60 * 60 * 1000));
-         
-//     let weekNumber = Math.ceil(days / 7);
- 
-//     console.log(`Week number of ${currentDate} is ${weekNumber}`);
-// }
-
-// returns 45
-// Date.prototype.getWeek = function() {
-//   var date = new Date(this.getTime());
-//   date.setHours(0, 0, 0, 0);
-//   // Thursday in current week decides the year.
-//   date.setDate(date.getDate() + 3 - (date.getDay() + 6) % 7);
-//   // January 4 is always in week 1.
-//   var week1 = new Date(date.getFullYear(), 0, 4);
-//   // Adjust to Thursday in week 1 and count number of weeks from date to week1.
-//   return 1 + Math.round(((date.getTime() - week1.getTime()) / 86400000
-//                         - 3 + (week1.getDay() + 6) % 7) / 7);
-// }
-
-// returns 1
-// Date.prototype.getWeekOfMonth = function() {
-//   var firstWeekday = new Date(this.getFullYear(), this.getMonth(), 1).getDay() - 1;
-//   if (firstWeekday < 0) firstWeekday = 6;
-//   var offsetDate = this.getDate() + firstWeekday - 2;
-//   return Math.floor(offsetDate / 7);
-// }
-
-// function getWeekOfMonth(fecha) {
-//   let date = new Date(fecha);
-//   let firstWeekDay = new Date((date.getFullYear()), date.getMonth(), 1).getDay();
-//   if (firstWeekDay > 0) firstWeekDay = 6;
-//   let offsetDate = date.getDate() + firstWeekDay - 1;
-//   return Math.floor(offsetDate / 7);
-// }
+    
 
     getWeekOfMonth(new Date(), { weekStartsOn: 1 })
 
@@ -647,20 +522,20 @@ if (!user) return
     
   })
 	}, [isAuth, dispatch, user]);
-
-  let timer;
-  useEffect(()=> {
-      timer = setInterval(() => {
-        setSegundos(prevSegundos => prevSegundos + 1);
   
-        if (segundos === 59) {
-          setMinutos(prevMinutos => prevMinutos + 1);
-          setSegundos(0);
-        }
-      }, 1000);
-  
-      return () => clearInterval(timer)
-  },[])
+    let timer;
+    useEffect(()=> {
+        timer = setInterval(() => {
+          setSegundos(prevSegundos => prevSegundos + 1);
+          // not recognizing segundos
+          if (segundos === 59) {
+            setMinutos(prevMinutos => prevMinutos + 1);
+            setSegundos(0);
+          }
+        }, 1000);
+    
+        return () => clearInterval(timer)
+    },[])
   
   useEffect(()=>{
     setInfoData()
@@ -674,32 +549,34 @@ if (!user) return
     window.location.reload();
     clearInterval(timer)
   }
-  const [ tramoSegundos, setTramoSegundos ] = useState(0);
-  const [ observaciones, setObservaciones ] = useState('');
+  // const [ tramoSegundos, setTramoSegundos ] = useState(0);
+  // const [ observaciones, setObservaciones ] = useState('');
+
+  const handleInput = e => {
+    const { value, name } = e.target
+    setFichaDatos( prevFichaDatos => {
+      return {
+        ...prevFichaDatos,
+        [name]: value
+      }
+    } )
+  }
+
+  useEffect(() => {
+    
+  setPorcentaje( prevPorcentaje => {
+    return Math.round(prevPorcentaje * 100) / 100
+  } )
+    
+  }, [ infoFicha ])
+  
 
 
 
   const getFechaLlamada = (date) => {
           let [dateValues, timeValues] = date.split(' ');
           
-          // dateValues = formatDate(date);
-          // const [month, day, year] = dateValues.split('/');
-          // const [hours, minutes, seconds] = timeValues.split(':');
-
-          // return new Date(`${dateValues} ${timeValues}`).toLocaleString('es-PE')
-
-          // return new Date(
-          //   new Date(year, month - 1, day, hours, minutes, seconds)
-          //     .toString()
-          // ).toISOString();
-          // return new Date(stringFecha).toLocaleString();
   }
-
-  // console.log(getFechaLlamada('17/10/2022 08:16:05'))
-  // console.log(isValidDate('30/02/2022'))
-  
-
-  // console.log(format())
 
   // Validate if new Date() isnt throwing an error
   function isValidDate(d) {
@@ -731,10 +608,81 @@ if (!user) return
     return dateValues;
   }
 
-  
+  const handleEmptyFields = ( object ) => {
+
+    const isFalsy = Object.values(object).some(value => {
+      if (!value || value==='NO') {
+        return true
+      }
+      return false;
+    });
+
+    return isFalsy
+  }
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    fichaDatos.audio_nombre = audioRef.current?.files[0]?.name;
+
+    let isThereAnEmpty;
+
+    if (fichaDatos.alerta === 'SI') {
+      const {
+          id_evaluacion,
+          cartera,
+          tramo,
+          mes_llamada,
+          fecha_llamada,
+          semana_llamada,
+          telefono,
+          dni_cliente,
+          resultado,
+          hora_llamada,
+          responsabilidad_no_fcr,
+          motivo_no_fcr,
+          fecha_monitoreo,
+          nombre_monitor,
+          rol,
+          hora_inicio,
+          hora_fin,
+          duracion_monitoreo,
+          tipo_ficha,
+          calificacion_final,
+          audio_nombre,
+          ...currentFields
+      } = fichaDatos;
+      console.log('Opciones con alerta SI:', currentFields)
+      isThereAnEmpty = handleEmptyFields(currentFields);
+    } else {
+      const {
+        id_evaluacion,
+        cartera,
+        tramo,
+        mes_llamada,
+        fecha_llamada,
+        semana_llamada,
+        telefono,
+        dni_cliente,
+        resultado,
+        hora_llamada,
+        alerta,
+        descripcion_alerta,
+        fecha_monitoreo,
+        nombre_monitor,
+        rol,
+        hora_inicio,
+        hora_fin,
+        duracion_monitoreo,
+        tipo_ficha,
+        audio_nombre,
+        calificacion_final,
+        ...currentFields
+    } = fichaDatos;
+    console.log('Opciones con alerta NO:', currentFields)
+    isThereAnEmpty = handleEmptyFields(currentFields);
+    }
+
     const endTime = new Date();
 
     let difference = endTime.getTime() - startTime.getTime();
@@ -745,7 +693,6 @@ if (!user) return
     let minuteDifference = Math.floor(difference / 60);
     difference -= minuteDifference * 60;
     const seconds = Math.ceil((difference % 60000) / 1000);
-    
     
     // SETTING OTHER VALUES
     fichaDatos.calificacion_final = `${porcentaje}%`;
@@ -762,35 +709,39 @@ if (!user) return
     fichaDatos.telefono = assigned.ID_CONT;
     fichaDatos.dni_cliente = assigned.IDENTIFICADOR;
     fichaDatos.resultado = assigned.EFECTO;
-    fichaDatos.tmo_segundos = tramoSegundos;
+    // fichaDatos.tmo_segundos = tramoSegundos;
 
     //audio
     // const audioName = audioRef.current?.files[0]?.name;
     // const datIndex = audioName?.indexOf('.');
     // const audioText = audioName?.slice(0, datIndex);
-    fichaDatos.audio_nombre = audioRef.current?.files[0]?.name;
-
-    fichaDatos.fecha_monitoreo = new Date().toLocaleString('es-PE');
+    const fechaActual = new Date().toLocaleString('es-PE');
+    const comaIndex = fechaActual.indexOf(',');
+    const soloFecha = fechaActual.slice(0, comaIndex);
+    fichaDatos.fecha_monitoreo = soloFecha;
     fichaDatos.nombre_monitor = user.usuario;
     fichaDatos.rol= user.cargo;
-    fichaDatos.alerta = fichaDatos.alerta ? 'SI' : 'NO'
+    // fichaDatos.alerta = fichaDatos.alerta ? 'SI' : 'NO'
     fichaDatos.hora_inicio = startTime.getHours() + ":" + `${startTime.getMinutes().toString().length===1 ? `0${startTime.getMinutes()}` : startTime.getMinutes()}` + ":" + `${startTime.getSeconds().toString().length===1 ? `0${startTime.getSeconds()}` : startTime.getSeconds()}`;
     fichaDatos.hora_fin = endTime.getHours() + ":" + `${endTime.getMinutes().toString().length===1 ? `0${endTime.getMinutes()}` : endTime.getMinutes()}` + ":" + `${endTime.getSeconds().toString().length===1 ? `0${endTime.getSeconds()}` : endTime.getSeconds()}`;
     fichaDatos.duracion_monitoreo = (minuteDifference * 60) + Math.round(difference);
-    fichaDatos.observaciones = observaciones;
+    // fichaDatos.observaciones = observaciones;
     fichaDatos.tipo_ficha = assigned.FICHA;
     // fichaDatos.duracion_monitoreo = minutos * 60 +  segundos + 1;
+    
+    if (!isThereAnEmpty) {
+      axios.post(FICHAS_URL, fichaDatos)
+      .then(res => {
+        dispatch(deleteRegister(assigned?.id));
+          alert('Ficha agregada, procediendo a la siguiente');
+          window.location.reload();
+      })
+      .catch(err =>{
+        alert('Error al agregar')
+        console.log(err)
+      })
+    } else alert('Complete todos los campos')
 
-    axios.post(FICHAS_URL, fichaDatos)
-    .then(res => {
-      dispatch(deleteRegister(assigned?.id));
-        alert('Ficha agregada, procediendo a la siguiente');
-        window.location.reload();
-    })
-    .catch(err =>{
-      alert('Error al agregar')
-      console.log(err)
-    })
   }
   // audio
   const [audioFile, setAudioFile] = useState('')
@@ -799,6 +750,12 @@ if (!user) return
     setAudioFile(URL.createObjectURL(e.target.files[0]));
   }
 
+  // TRICKING PORCENTAJE WHEN ITS 99.99 OR 100.1 USING FICHADATOS STATE
+    useEffect(() => {
+      if ((porcentaje > 99 && porcentaje < 100) || porcentaje > 100 && porcentaje < 101) {
+        setPorcentaje( 100 )
+      }
+    }, [fichaDatos])
     
 
   //  reset input value, not working
@@ -809,95 +766,276 @@ if (!user) return
   // SELECTS 
   const [showMotivoAlerta, setShowMotivoAlerta] = useState(false)
 
-  //TRYING NEW METHOD
+  let totalPorcentaje = 100;
 
-  const setPesos = (event, elementName, parentState, setParentState) => {
-    // Restar % actual al % total
-    const cumpleItem = parentState[elementName].find(item => item.nombre === 'Sí cumple');
-    // set_total_peso(prevState => prevState - cumpleItem.peso)
-    // substracting peso to porcentaje if there is a 'Sí cumple' option selected
-    
-    // Substracting peso from current total_peso to get new values
-    const newPesoReferencia = parentState.total_peso - cumpleItem.peso;
-    // Setting new peso and  peso_percent
+  // Cambiamos los pesos de los otros parentObjects (Tabs de selects)
+  const changeOtherTabs = (objectIndex) => {
+    // Subtract total_peso from full percent(100)
+    totalPorcentaje = Math.round(((totalPorcentaje - infoFicha[objectIndex].total_peso) + Number.EPSILON) * 100) / 100;;
+    // totalPorcentaje = totalPorcentaje - infoFicha[objectIndex].total_peso;
+      // LAST METHOD WHEN WE DIDNT HAVE INDEX BY PARAMETER
+      // Get current object (using [1] element 'cause we dont have index and need unique value to identify it)
+      // const propertyName = Object.keys(parentState)[1];
+      // Find index of current element in Global State (infoFicha)
+      // const indexFound = infoFicha.findIndex( element => element.hasOwnProperty(propertyName) )
 
-    for (const key in parentState) {
-      if ( key !== elementName && key !== 'total_peso' ) {
-        parentState[key].forEach(item => {
-          if (item.isSelected && item.nombre === 'Sí cumple') {
-            setPorcentaje( prevPorcentaje => prevPorcentaje - item.peso);
+      // ========SUBTRACTING ALL SELECTED PESOS FROM ALL SELECTS=============
+        infoFicha.forEach(item => {
+          for (const key in item) {
+            if (key !== 'total_peso') {
+              item[key].forEach( element => {
+                if (element.isSelected && element.nombre === 'Sí cumple') {
+                  setPorcentaje( prevPorcentaje => Math.round(((prevPorcentaje - element.peso) + Number.EPSILON) * 100) / 100 );
+                }
+              } )
+            }
           }
         })
 
-        setParentState( prevParentState => {
-          return (
-            {...prevParentState,
-            [key]: parentState[key].map(item => {
-              const pesoPercent = Math.round(((item.peso * 100 / newPesoReferencia) + Number.EPSILON) * 100) / 100;
-              return {
-                ...item,
-                peso: Math.round(((parentState.total_peso * pesoPercent / 100) + Number.EPSILON) * 100) / 100,
-                peso_percent: pesoPercent,
-              }
-            })
+    
+    // // ===================== SETTING NEW INFOFICHA WHEN ALL NO APLICA IN ONE SELECT FOUND ===================
+    setInfoFicha( prevInfoFicha => prevInfoFicha.map( (ficha, index) => {
+      // gettings the other objects
+      if (index !== objectIndex) {
+        // Saving previousPeso
+          const previousPeso =  ficha.total_peso;
+        // Looping into each object
+        for (const key in ficha) {
+          // Changing total_peso because of the new total peso
+          if ( key === 'total_peso' ) {
+            ficha.total_peso = Math.round(((ficha.total_peso * 100 / totalPorcentaje) + Number.EPSILON) * 100) / 100;
+            // ficha.total_peso = ficha.total_peso * 100 / totalPorcentaje;
+          } else {
+            // Looping into select arrays to set the new peso and peso_percent
+            ficha[key] = ficha[key].map( item => {
+              if (item.nombre === 'Sí cumple') {
+                const newPorcentaje = Math.round(((item.peso * 100 / previousPeso) + Number.EPSILON) * 100) / 100;
+                // const newPorcentaje = item.peso * 100 / previousPeso;
+                return {
+                  ...item,
+                  peso_percent: newPorcentaje,
+                  peso: Math.round(((ficha.total_peso * newPorcentaje / 100) + Number.EPSILON) * 100) / 100,
+                  // peso: ficha.total_peso * newPorcentaje / 100,
+                }
+              } else return item
+            } )
           }
-          )
+        }
+        return ficha;
+      } else return ficha
+    } ) )
+
+    setInfoFicha( prevInfoFicha => {
+      prevInfoFicha.forEach(item => {
+        for (const key in item) {
+          if (key !== 'total_peso') {
+            item[key].forEach( element => {
+              if (element.isSelected && element.nombre === 'Sí cumple') {
+                setPorcentaje( prevPorcentaje => Math.round(((prevPorcentaje + element.peso) + Number.EPSILON) * 100) / 100 );
+              }
+            } )
+          }
+        }
+      })
+      return prevInfoFicha
+    } )
+  }
+
+  // const handleNoAplica = (event, elementName, parentState, setParentState) => {
+  const handleNoAplica = ( objectIndex, elementName) => {
+
+    // ============ Ver si todas las opciones son 'No aplica' ============
+    const responses = [];
+
+    for (const key in infoFicha[objectIndex]) {
+      if ( key !== elementName && key !== 'total_peso' ) {
+        const hasNoAplica = infoFicha[objectIndex][key].some( element => element.isSelected && element.nombre === 'No aplica' );
+        responses.push(hasNoAplica)
+      }
+    }
+
+    // Validate if all responses are true;
+    const disable = responses.every(element => element === true);
+    if (disable) {
+      return changeOtherTabs(objectIndex)
+    } 
+
+    // =============== HANDLING BASIC NO APLICA OPTION =====================
+    // Restar % actual al % total
+    const cumpleItem = infoFicha[objectIndex][elementName].find(item => item.nombre === 'Sí cumple');
+    // OLD const cumpleItem = parentState[elementName].find(item => item.nombre === 'Sí cumple');
+    // set_total_peso(prevState => prevState - cumpleItem.peso)
+    // subtracting peso to porcentaje if there is a 'Sí cumple' option selected
+    
+    // Subtracting peso from current total_peso to get new values
+    const newLocalPesoReferencia = Math.round(((infoFicha[objectIndex].total_peso - cumpleItem.peso) + Number.EPSILON) * 100) / 100;
+    // const newLocalPesoReferencia = infoFicha[objectIndex].total_peso - cumpleItem.peso;
+
+    // OLD const newPesoReferencia = parentState.total_peso - cumpleItem.peso;
+    // Setting new peso and  peso_percent
+
+    // LOOPING INTO CURRENT OBJECT OF SELECT ARRAYS
+    for (const key in infoFicha[objectIndex]) {
+      if ( key !== elementName && key !== 'total_peso' ) {
+        // SUBTRACTING CURRENT PESO IF THERE ARE SI CUMPLE OPTIONS SELECTED
+        infoFicha[objectIndex][key].forEach(item => {
+          if (item.isSelected && item.nombre === 'Sí cumple') {
+            setPorcentaje( prevPorcentaje => Math.round(((prevPorcentaje - item.peso) + Number.EPSILON) * 100) / 100 );
+            // setPorcentaje( prevPorcentaje => prevPorcentaje - item.peso);
+          }
+        })
+
+        // SETTING NEW PESOS AND PESO PERCENT INSIDE THE SELECT ARRAY
+        setInfoFicha( prevInfoFicha => {
+          // LOPING GLOBAL ARRAY
+          return prevInfoFicha.map( (element, index) => {
+            // FINDING CURRENT OBJECT OF SELECT ARRAYS
+            if (index === objectIndex) {
+              // FINDING OTHER SELECT ARRAYS, DIFFERENT THAN SELECT AND THAT HAS NO APLICA
+                  // SETTING NEW PESOS AND PESO_PERCENT
+                  prevInfoFicha[objectIndex][key] = prevInfoFicha[objectIndex][key].map( item => {
+                    const pesoPercent = Math.round(((item.peso * 100 / newLocalPesoReferencia) + Number.EPSILON) * 100) / 100;
+                    // const pesoPercent = item.peso * 100 / newLocalPesoReferencia;
+                    return{
+                      ...item,
+                      peso: Math.round(((element.total_peso * pesoPercent / 100) + Number.EPSILON) * 100) / 100,
+                      // peso: element.total_peso * pesoPercent / 100,
+                      peso_percent: pesoPercent,
+                    }
+                  } )
+              return element
+            }
+            else return element
+          } )
         } )
 
-        setParentState( prevParentState => {
-          prevParentState[key].forEach(item => {
-            console.log('agregando peso')
+        // ADDING NEW PESOS TO THE OBJECT (IT'S INSIDE A SETSTATE 'CAUSE OF ASYNCHRONISM)
+        setInfoFicha( prevInfoFicha => {
+          prevInfoFicha[objectIndex][key].forEach(item => {
             if (item.isSelected && item.nombre === 'Sí cumple') {
-              setPorcentaje( prevPorcentaje => prevPorcentaje + item.peso);
+              setPorcentaje( prevPorcentaje => Math.round(((prevPorcentaje + item.peso) + Number.EPSILON) * 100) / 100 );
+              // setPorcentaje( prevPorcentaje => prevPorcentaje + item.peso);
             }
           })
-          return prevParentState;
+          return prevInfoFicha;
         } )
       }
     }
-    
-    // adding new peso to porcentaje if there is a 'Sí cumple' option selected
-    
-  
 
     // for (const key in parentState) {
     //   if ( key !== elementName && key !== 'total_peso' ) {
     //     parentState[key].forEach(item => {
-    //       console.log(item)
     //       if (item.isSelected && item.nombre === 'Sí cumple') {
-    //         console.log('si es')
-    //         setPorcentaje( prevPorcentaje => prevPorcentaje + item.peso);
+    //         setPorcentaje( prevPorcentaje => prevPorcentaje - item.peso);
     //       }
     //     })
+
+    //     setParentState( prevParentState => {
+    //       return (
+    //         {...prevParentState,
+    //         [key]: parentState[key].map(item => {
+    //           const pesoPercent = Math.round(((item.peso * 100 / newPesoReferencia) + Number.EPSILON) * 100) / 100;
+    //           return {
+    //             ...item,
+    //             peso: Math.round(((parentState.total_peso * pesoPercent / 100) + Number.EPSILON) * 100) / 100,
+    //             peso_percent: pesoPercent,
+    //           }
+    //         })
+    //       }
+    //       )
+    //     } )
+
+    //     setParentState( prevParentState => {
+    //       prevParentState[key].forEach(item => {
+    //         if (item.isSelected && item.nombre === 'Sí cumple') {
+    //           setPorcentaje( prevPorcentaje => prevPorcentaje + item.peso);
+    //         }
+    //       })
+    //       return prevParentState;
+    //     } )
     //   }
     // }
+    
 
   }
+  // USED
+  // const handlePorcentaje = ( event, elementName, parentState, setParentState, elementRef, elementSetSelected ) => {
+  //   elementSetSelected(event)
+  //   handleSelectOption(event, elementRef)
+  //   if (event.value.nombre === 'No aplica') {
+  //     handleNoAplica(event, elementName, parentState, setParentState);
+  //   }
+  //   else {
+  //     parentState[elementName].forEach(item => {
+  //       if (item.isSelected) {
+  //         setPorcentaje( prevPorcentaje => prevPorcentaje - item.peso);
+  //       }
+  //     })
+  //     setPorcentaje( prevPorcentaje => prevPorcentaje +  event.value.peso)
+  //   }
+  //   setParentState(prevState => {
+  //     return(
+  //       {
+  //         ...prevState,
+  //         [elementName]: prevState[elementName].map(item => {return{...item, isSelected: item.nombre === event.value.nombre}})
+  //       }
+  //     )
+  //   });
 
-  const handlePorcentaje = ( event, elementName, parentState, setParentState, elementRef, elementSetSelected ) => {
+  // }
+
+    // Subtract percent if there is a Si cumple option selected
+    const handleSubtractPorcentaje = (arrayName, index) => {
+      infoFicha[index][arrayName].forEach(element => {
+        if (element.nombre === 'Sí cumple' && element.isSelected) {
+          setPorcentaje( prevPorcentaje => Math.round((prevPorcentaje - element.peso + Number.EPSILON) * 100) / 100 )
+          // setPorcentaje( prevPorcentaje => prevPorcentaje - element.peso)
+        }
+      });
+    }
+    // Else if selected option is Si cumple, add percent
+    const handleAddPorcentaje = (arrayName, index) => {
+      infoFicha[index][arrayName].forEach(element => {
+        if (element.nombre === 'Sí cumple') {
+          setPorcentaje( prevPorcentaje => Math.round((prevPorcentaje + element.peso + Number.EPSILON) * 100) / 100 )
+          // setPorcentaje( prevPorcentaje => prevPorcentaje + element.peso)
+        }
+      });
+    }
+
+  const handlePorcentajeFromGlobal = ( event, selectArrayName, globalArrayIndex, elementRef, elementSetSelected ) => {
     elementSetSelected(event)
     handleSelectOption(event, elementRef)
-    if (event.value.nombre === 'No aplica') {
-      setPesos(event, elementName, parentState, setParentState);
-    }
-    else {
-      parentState[elementName].forEach(item => {
-        if (item.isSelected) {
-          setPorcentaje( prevPorcentaje => prevPorcentaje - item.peso);
-        }
-      })
-      setPorcentaje( prevPorcentaje => prevPorcentaje +  event.value.peso)
-    }
-    setParentState(prevState => {
-      return(
-        {
-          ...prevState,
-          [elementName]: prevState[elementName].map(item => {return{...item, isSelected: item.nombre === event.value.nombre}})
-        }
-      )
-    });
 
+    // Subtract percent if there is a Si cumple option selected
+        handleSubtractPorcentaje(selectArrayName, globalArrayIndex)
+    
+    // If select is No aplica handleNoAplica (missing)
+    if (event.value.nombre === 'No aplica') {
+      handleNoAplica(globalArrayIndex, selectArrayName);
+    }
+    // Else if selected option is Si cumple, add percent
+    if (event.value.nombre === 'Sí cumple') {
+      handleAddPorcentaje(selectArrayName, globalArrayIndex)
+    }
+    
+    // CHANGING ALL GLOBAL OBJECT JUST FOR SETTINGS THE isSelected option to true if the name is equal
+    setInfoFicha( prevInfoFicha => {
+      return prevInfoFicha.map( (element, index) => {
+        if (index === globalArrayIndex) {
+          return {
+            ...element,
+            [selectArrayName]: element[selectArrayName].map( element => {
+                return{...element, isSelected: element.nombre === event.value.nombre}
+            } )
+          }
+        }
+        else return element
+      } )
+    } )
   }
+
+  
   
   return (
     <section className='ficha-evaluacion'>
@@ -909,7 +1047,7 @@ if (!user) return
           <h2 className='ficha-modelo__01-main__title'>EVALUACIÓN {assigned?.FICHA}</h2>
           <p className='ficha-modelo__01-main__time'>
                 {/* {horas < 10 ? '0' + horas : horas}: */}
-                {minutos < 10 ? '0' + minutos : minutos}:
+                {/* {minutos < 10 ? '0' + minutos : minutos}: */}
                 {segundos < 10 ? '0' + segundos : segundos}
           </p>
 
@@ -934,7 +1072,7 @@ if (!user) return
 
           <h5 className='gray'>TMO</h5>
           <div className='gray span-2'>
-            <input type="number" value={tramoSegundos} onChange={e => setTramoSegundos(e.target.value)} className='tmo-input' placeholder='tmo manual (segundos)'/>
+            <input type="number" value={fichaDatos.tmo_segundos} name='tmo_segundos' onChange={handleInput} className='tmo-input' placeholder='tmo manual (segundos)'/>
           </div>
 
           <h5>FECHA / TELÉFONO</h5>
@@ -945,7 +1083,7 @@ if (!user) return
             <Select name='tipo_llamada' ref={tipoLlamadaRef} className='gray' options={optionsTipoLlamada} onChange={e => handleSelectOption(e, tipoLlamadaRef)}/>
           <div className='tipo-gestion gray'>
             <h5>Tipo de Gestión</h5>
-            <Select name='tipo_gestion' ref={tipoGestionRef} className='tipo-gestion__select' options={optionsTipoGestion} onChange={e => handleSelectOption(e, tipoGestionRef)}/>
+            <Select name='tipo_gestion' value={tipoGestionSelect} ref={tipoGestionRef} className='tipo-gestion__select' options={optionsTipoGestion} onChange={e => handleSelectOption(e, tipoGestionRef)}/>
           </div>
 
           <h5 className='gray'>Motivo no pago</h5>
@@ -953,7 +1091,7 @@ if (!user) return
 
           <h5>ALERTA</h5>
           <div>
-              <input className='interferencia-checkbox' type="checkbox" name="alerta" onChange={handleCheckboxOption} checked={fichaDatos.alerta}/>
+              <input className='interferencia-checkbox' type="checkbox" name="alerta" onChange={handleCheckboxOption} checked={fichaDatos.alerta === 'SI' ? true : false}/>
           </div>
           <div>
             {
@@ -1028,7 +1166,8 @@ if (!user) return
         <div className='ficha-modelo__02-tabs__item'>
             <label htmlFor="saludo_11">1.1 Saludo</label>
             {/* <Select value={selectedAperturaState11} name='saludo_11' ref={aperturaState11Ref} options = {aperturaState11?.map(apertura => ({ label: apertura.nombre, value: apertura }))} onChange={(e) => handleTotalPorcentaje(e, aperturaState11, setAperturaState11, aperturaPesoTotal, setAperturaPesoTotal, [setAperturaState12, setAperturaState13], aperturaState11Ref, setSelectedAperturaState11, {aperturaState12, aperturaState13})}/> */}
-            <Select value={selectedAperturaState11} name='saludo_11' ref={aperturaState11Ref} options = {aperturaState?.apertura11?.map(aperturaObject => ({ label: aperturaObject.nombre, value: aperturaObject }))} onChange={(e) => handlePorcentaje(e, Object.keys(aperturaState)?.[1], aperturaState, setAperturaState, aperturaState11Ref, setSelectedAperturaState11)}/>
+            {/* USED <Select value={selectedAperturaState11} name='saludo_11' ref={aperturaState11Ref} options = {aperturaState?.apertura11?.map(aperturaObject => ({ label: aperturaObject.nombre, value: aperturaObject }))} onChange={(e) => handlePorcentaje(e, Object.keys(aperturaState)?.[1], aperturaState, setAperturaState, aperturaState11Ref, setSelectedAperturaState11)}/> */}
+            <Select value={selectedAperturaState11} name='saludo_11' ref={aperturaState11Ref} options = {infoFicha?.[0]?.apertura11.map(aperturaObject => ({ label: aperturaObject.nombre, value: aperturaObject }))} onChange={(e) => handlePorcentajeFromGlobal(e, 'apertura11', 0, aperturaState11Ref, setSelectedAperturaState11)}/>
             {/* <select name='saludo_11' value={apertura01} onChange={e => handleTotalPorcentaje(e, aperturaState11, setAperturaState11, aperturaPesoTotal, setAperturaPesoTotal, [setAperturaState12, setAperturaState13], aperturaState11Ref)} placeholder='Seleccione'>
               {
                 aperturaState11?.map( (apertura, index) => (
@@ -1040,12 +1179,14 @@ if (!user) return
         <div className='ficha-modelo__02-tabs__item'>
             <label htmlFor="contactar_con_persona_12">1.2 Contactar con la persona adecuada</label>
             {/* <Select value={selectedAperturaState12} name='contactar_con_persona_12' ref={aperturaState12Ref} options = {aperturaState12?.map(apertura => ({ label: apertura.nombre, value: apertura }))} onChange={(e) => handleTotalPorcentaje(e, aperturaState12, setAperturaState12, aperturaPesoTotal, setAperturaPesoTotal, [setAperturaState11, setAperturaState13], aperturaState12Ref, setSelectedAperturaState12, {aperturaState11, aperturaState13})}/> */}
-            <Select value={selectedAperturaState12} name='contactar_con_persona_12' ref={aperturaState12Ref} options = {aperturaState?.apertura12?.map(aperturaObject => ({ label: aperturaObject.nombre, value: aperturaObject }))} onChange={(e) => handlePorcentaje(e, Object.keys(aperturaState)?.[2], aperturaState, setAperturaState, aperturaState12Ref, setSelectedAperturaState12)}/>
+            {/* USED <Select value={selectedAperturaState12} name='contactar_con_persona_12' ref={aperturaState12Ref} options = {aperturaState?.apertura12?.map(aperturaObject => ({ label: aperturaObject.nombre, value: aperturaObject }))} onChange={(e) => handlePorcentaje(e, Object.keys(aperturaState)?.[2], aperturaState, setAperturaState, aperturaState12Ref, setSelectedAperturaState12)}/> */}
+            <Select value={selectedAperturaState12} name='contactar_con_persona_12' ref={aperturaState12Ref} options = {infoFicha?.[0]?.apertura12.map(aperturaObject => ({ label: aperturaObject.nombre, value: aperturaObject }))} onChange={(e) => handlePorcentajeFromGlobal(e, 'apertura12', 0, aperturaState12Ref, setSelectedAperturaState12)}/>
         </div>
         <div className='ficha-modelo__02-tabs__item'>
             <label htmlFor="identificacion_gestor_13">1.3 Identificación del gestor</label>
             {/* <Select value={selectedAperturaState13} name='identificacion_gestor_13' ref={aperturaState13Ref} options = {aperturaState13?.map(apertura => ({ label: apertura.nombre, value: apertura }))} onChange={(e) => handleTotalPorcentaje(e, aperturaState13, setAperturaState13, aperturaPesoTotal, setAperturaPesoTotal, [setAperturaState11, setAperturaState12], aperturaState13Ref, setSelectedAperturaState13, {aperturaState11, aperturaState12})}/> */}
-            <Select value={selectedAperturaState13} name='identificacion_gestor_13' ref={aperturaState13Ref} options = {aperturaState?.apertura13?.map(aperturaObject => ({ label: aperturaObject.nombre, value: aperturaObject }))} onChange={(e) => handlePorcentaje(e, Object.keys(aperturaState)?.[3], aperturaState, setAperturaState, aperturaState13Ref, setSelectedAperturaState13)}/>
+            {/* USED <Select value={selectedAperturaState13} name='identificacion_gestor_13' ref={aperturaState13Ref} options = {aperturaState?.apertura13?.map(aperturaObject => ({ label: aperturaObject.nombre, value: aperturaObject }))} onChange={(e) => handlePorcentaje(e, Object.keys(aperturaState)?.[3], aperturaState, setAperturaState, aperturaState13Ref, setSelectedAperturaState13)}/> */}
+            <Select value={selectedAperturaState13} name='identificacion_gestor_13' ref={aperturaState13Ref} options = {infoFicha?.[0]?.apertura13.map(aperturaObject => ({ label: aperturaObject.nombre, value: aperturaObject }))} onChange={(e) => handlePorcentajeFromGlobal(e, 'apertura13', 0, aperturaState13Ref, setSelectedAperturaState13)}/>
         </div>
       </div>
     }
@@ -1054,17 +1195,20 @@ if (!user) return
               <div className='ficha-modelo__02-tabs__item'>
                   <label htmlFor="brindar_info">2.1 Brindar información de la Situación del Producto</label>
                   {/* <Select value={selectedIndagacionState21} name='brindar_informacion_21' ref={indagacionState21Ref} options = {indagacionState21?.map(indagacion => ({ label: indagacion.nombre, value: indagacion }))} onChange={(e) => handleTotalPorcentaje(e, indagacionState21, setIndagacionState21, indagacionPesoTotal, setIndagacionPesoTotal, [setIndagacionState22, setIndagacionState23], indagacionState21Ref, setSelectedIndagacionState21)}/> */}
-                  <Select value={selectedIndagacionState21} name='brindar_informacion_21' ref={indagacionState21Ref} options = {indagacionState?.indagacion21?.map(indagacionObject => ({ label: indagacionObject.nombre, value: indagacionObject }))} onChange={(e) => handlePorcentaje(e, Object.keys(indagacionState)?.[1], indagacionState, setIndagacionState, indagacionState21Ref, setSelectedIndagacionState21)}/>
+                  {/* USED <Select value={selectedIndagacionState21} name='brindar_informacion_21' ref={indagacionState21Ref} options = {indagacionState?.indagacion21?.map(indagacionObject => ({ label: indagacionObject.nombre, value: indagacionObject }))} onChange={(e) => handlePorcentaje(e, Object.keys(indagacionState)?.[1], indagacionState, setIndagacionState, indagacionState21Ref, setSelectedIndagacionState21)}/> */}
+                  <Select value={selectedIndagacionState21} name='brindar_informacion_21' ref={indagacionState21Ref} options = {infoFicha?.[1]?.indagacion21?.map(indagacionObject => ({ label: indagacionObject.nombre, value: indagacionObject }))} onChange={(e) => handlePorcentajeFromGlobal(e, 'indagacion21', 1, indagacionState21Ref, setSelectedIndagacionState21)}/>
               </div>
               <div className='ficha-modelo__02-tabs__item'>
                   <label htmlFor="indagar_motivo">2.2 Indagar motivo de No Pago + Sustento de pago</label>
                   {/* <Select value={selectedIndagacionState22} name='indagar_motivo_no_pago_22' ref={indagacionState22Ref} options = {indagacionState22?.map(indagacion => ({ label: indagacion.nombre, value: indagacion }))} onChange={(e) => handleTotalPorcentaje(e, indagacionState22, setIndagacionState22, indagacionPesoTotal, setIndagacionPesoTotal, [setIndagacionState21, setIndagacionState23], indagacionState22Ref, setSelectedIndagacionState22)}/> */}
-                  <Select value={selectedIndagacionState22} name='indagar_motivo_no_pago_22' ref={indagacionState22Ref} options = {indagacionState?.indagacion22?.map(indagacionObject => ({ label: indagacionObject.nombre, value: indagacionObject }))} onChange={(e) => handlePorcentaje(e, Object.keys(indagacionState)?.[2], indagacionState, setIndagacionState, indagacionState22Ref, setSelectedIndagacionState22)}/>
+                  {/* USED <Select value={selectedIndagacionState22} name='indagar_motivo_no_pago_22' ref={indagacionState22Ref} options = {indagacionState?.indagacion22?.map(indagacionObject => ({ label: indagacionObject.nombre, value: indagacionObject }))} onChange={(e) => handlePorcentaje(e, Object.keys(indagacionState)?.[2], indagacionState, setIndagacionState, indagacionState22Ref, setSelectedIndagacionState22)}/> */}
+                  <Select value={selectedIndagacionState22} name='indagar_motivo_no_pago_22' ref={indagacionState22Ref} options = {infoFicha?.[1]?.indagacion22?.map(indagacionObject => ({ label: indagacionObject.nombre, value: indagacionObject }))} onChange={(e) => handlePorcentajeFromGlobal(e, 'indagacion22', 1, indagacionState22Ref, setSelectedIndagacionState22)}/>
               </div>
               <div className='ficha-modelo__02-tabs__item'>
                   <label htmlFor="asesorar">2.3 Asesorar</label>
                   {/* <Select value={selectedIndagacionState23} name='asesorar_23' ref={indagacionState23Ref} options = {indagacionState23?.map(indagacion => ({ label: indagacion.nombre, value: indagacion }))} onChange={(e) => handleTotalPorcentaje(e, indagacionState23, setIndagacionState23, indagacionPesoTotal, setIndagacionPesoTotal, [setIndagacionState21, setIndagacionState22], indagacionState23Ref, setSelectedIndagacionState23)}/> */}
-                  <Select value={selectedIndagacionState23} name='asesorar_23' ref={indagacionState23Ref} options = {indagacionState?.indagacion23?.map(indagacionObject => ({ label: indagacionObject.nombre, value: indagacionObject }))} onChange={(e) => handlePorcentaje(e, Object.keys(indagacionState)?.[3], indagacionState, setIndagacionState, indagacionState23Ref, setSelectedIndagacionState23)}/>
+                  {/* USED <Select value={selectedIndagacionState23} name='asesorar_23' ref={indagacionState23Ref} options = {indagacionState?.indagacion23?.map(indagacionObject => ({ label: indagacionObject.nombre, value: indagacionObject }))} onChange={(e) => handlePorcentaje(e, Object.keys(indagacionState)?.[3], indagacionState, setIndagacionState, indagacionState23Ref, setSelectedIndagacionState23)}/> */}
+                  <Select value={selectedIndagacionState23} name='asesorar_23' ref={indagacionState23Ref} options = {infoFicha?.[1]?.indagacion23?.map(indagacionObject => ({ label: indagacionObject.nombre, value: indagacionObject }))} onChange={(e) => handlePorcentajeFromGlobal(e, 'indagacion23', 1, indagacionState23Ref, setSelectedIndagacionState23)}/>
               </div>
             </div>
     }      
@@ -1073,12 +1217,13 @@ if (!user) return
               <div className='ficha-modelo__02-tabs__item'>
                   <label htmlFor="saludo">3.1 Mantiene sentido de urgencia</label>
                   {/* <Select value={selectedManejoState31} name='mantiene_sentido_urgencia_31' ref={manejoState31Ref} options = {manejoState31?.map(manejo => ({ label: manejo.nombre, value: manejo }))} onChange={(e) => handleTotalPorcentaje(e, manejoState31, setManejoState31, manejoPesoTotal, setManejoPesoTotal, [setManejoState32], manejoState31Ref, setSelectedManejoState31)}/> */}
-                  <Select value={selectedManejoState31} name='mantiene_sentido_urgencia_31' ref={manejoState31Ref} options = {manejoState?.manejo31?.map(manejoObject => ({ label: manejoObject.nombre, value: manejoObject }))} onChange={(e) => handlePorcentaje(e, Object.keys(manejoState)?.[1], manejoState, setManejoState, manejoState31Ref, setSelectedManejoState31)}/>
+                  {/* USED <Select value={selectedManejoState31} name='mantiene_sentido_urgencia_31' ref={manejoState31Ref} options = {manejoState?.manejo31?.map(manejoObject => ({ label: manejoObject.nombre, value: manejoObject }))} onChange={(e) => handlePorcentaje(e, Object.keys(manejoState)?.[1], manejoState, setManejoState, manejoState31Ref, setSelectedManejoState31)}/> */}
+                  <Select value={selectedManejoState31} name='mantiene_sentido_urgencia_31' ref={manejoState31Ref} options = {infoFicha?.[2]?.manejo31?.map(manejoObject => ({ label: manejoObject.nombre, value: manejoObject }))} onChange={(e) => handlePorcentajeFromGlobal(e, 'manejo31', 2, manejoState31Ref, setSelectedManejoState31)}/>
               </div>
               <div className='ficha-modelo__02-tabs__item'>
                   <label htmlFor="contactar_persona">3.2 Perseverancia en el Objetivo/Manejo de Objeciones</label>
                   {/* <Select value={selectedManejoState32} name='perseverancia_objetivo_32' ref={manejoState32Ref} options = {manejoState32?.map(manejo => ({ label: manejo.nombre, value: manejo }))} onChange={(e) => handleTotalPorcentaje(e, manejoState32, setManejoState32, manejoPesoTotal, setManejoPesoTotal, [setManejoState31], manejoState32Ref, setSelectedManejoState32)}/> */}
-                  <Select value={selectedManejoState32} name='perseverancia_objetivo_32' ref={manejoState32Ref} options = {manejoState?.manejo32?.map(manejoObject => ({ label: manejoObject.nombre, value: manejoObject }))} onChange={(e) => handlePorcentaje(e, Object.keys(manejoState)?.[2], manejoState, setManejoState, manejoState32Ref, setSelectedManejoState32)}/>
+                  <Select value={selectedManejoState32} name='perseverancia_objetivo_32' ref={manejoState32Ref} options = {infoFicha?.[2]?.manejo32?.map(manejoObject => ({ label: manejoObject.nombre, value: manejoObject }))} onChange={(e) => handlePorcentajeFromGlobal(e, 'manejo32', 2, manejoState32Ref, setSelectedManejoState32)}/>
               </div>
             </div>
     }            
@@ -1087,12 +1232,13 @@ if (!user) return
               <div className='ficha-modelo__02-tabs__item'>
                   <label htmlFor="saludo">4.1 Reafirmar acuerdos y próximos pasos (Parafraseo)</label>
                   {/* <Select value={selectedCierreState41} name='reafirmar_acuerdos_41' ref={cierreState41Ref} options = {cierreState41?.map(cierre => ({ label: cierre.nombre, value: cierre }))} onChange={(e) => handleTotalPorcentaje(e, cierreState41, setCierreState41, cierrePesoTotal, setCierrePesoTotal, [setCierreState42], cierreState41Ref, setSelectedCierreState41)}/> */}
-                  <Select value={selectedCierreState41} name='reafirmar_acuerdos_41' ref={cierreState41Ref} options = {cierreState?.cierre41?.map(cierreObject => ({ label: cierreObject.nombre, value: cierreObject }))} onChange={(e) => handlePorcentaje(e, Object.keys(cierreState)?.[1], cierreState, setCierreState, cierreState41Ref, setSelectedCierreState41)}/>
+                  {/* USED <Select value={selectedCierreState41} name='reafirmar_acuerdos_41' ref={cierreState41Ref} options = {cierreState?.cierre41?.map(cierreObject => ({ label: cierreObject.nombre, value: cierreObject }))} onChange={(e) => handlePorcentaje(e, Object.keys(cierreState)?.[1], cierreState, setCierreState, cierreState41Ref, setSelectedCierreState41)}/> */}
+                  <Select value={selectedCierreState41} name='reafirmar_acuerdos_41' ref={cierreState41Ref} options = {infoFicha?.[3]?.cierre41?.map(cierreObject => ({ label: cierreObject.nombre, value: cierreObject }))} onChange={(e) => handlePorcentajeFromGlobal(e, 'cierre41', 3, cierreState41Ref, setSelectedCierreState41)}/>
               </div>
               <div className='ficha-modelo__02-tabs__item'>
                   <label htmlFor="contactar_persona">4.2 Despedida del Cliente</label>
                   {/* <Select value={selectedCierreState42} name='despedida_cliente_42' ref={cierreState42Ref} options = {cierreState42?.map(cierre => ({ label: cierre.nombre, value: cierre }))} onChange={(e) => handleTotalPorcentaje(e, cierreState42, setCierreState42, cierrePesoTotal, setCierrePesoTotal, [setCierreState41], cierreState42Ref, setSelectedCierreState42)}/> */}
-                  <Select value={selectedCierreState42} name='despedida_cliente_42' ref={cierreState42Ref} options = {cierreState?.cierre42?.map(cierreObject => ({ label: cierreObject.nombre, value: cierreObject }))} onChange={(e) => handlePorcentaje(e, Object.keys(cierreState)?.[2], cierreState, setCierreState, cierreState42Ref, setSelectedCierreState42)}/>
+                  <Select value={selectedCierreState42} name='despedida_cliente_42' ref={cierreState42Ref} options = {infoFicha?.[3]?.cierre42?.map(cierreObject => ({ label: cierreObject.nombre, value: cierreObject }))} onChange={(e) => handlePorcentajeFromGlobal(e, 'cierre42', 3, cierreState42Ref, setSelectedCierreState42)}/>
               </div>
             </div>
     }    
@@ -1101,17 +1247,18 @@ if (!user) return
               <div className='ficha-modelo__02-tabs__item'>
                   <label htmlFor="saludo">5.1 Escucha activa</label>
                   {/* <Select value={selectedHabilidadesState51} name='escucha_activa_51' ref={habilidadesState51Ref} options = {habilidadesState51?.map(habilidades => ({ label: habilidades.nombre, value: habilidades }))} onChange={(e) => handleTotalPorcentaje(e, habilidadesState51, setHabilidadesState51, habilidadesPesoTotal, setHabilidadesPesoTotal, [setHabilidadesState52, setHabilidadesState53], habilidadesState51Ref, setSelectedHabilidadesState51)}/> */}
-                  <Select value={selectedHabilidadesState51} name='escucha_activa_51' ref={habilidadesState51Ref} options = {habilidadesState?.habilidades51?.map(habilidadesObject => ({ label: habilidadesObject.nombre, value: habilidadesObject }))} onChange={(e) => handlePorcentaje(e, Object.keys(habilidadesState)?.[1], habilidadesState, setHabilidadesState, habilidadesState51Ref, setSelectedHabilidadesState51)}/>
+                  {/* USED <Select value={selectedHabilidadesState51} name='escucha_activa_51' ref={habilidadesState51Ref} options = {habilidadesState?.habilidades51?.map(habilidadesObject => ({ label: habilidadesObject.nombre, value: habilidadesObject }))} onChange={(e) => handlePorcentaje(e, Object.keys(habilidadesState)?.[1], habilidadesState, setHabilidadesState, habilidadesState51Ref, setSelectedHabilidadesState51)}/> */}
+                  <Select value={selectedHabilidadesState51} name='escucha_activa_51' ref={habilidadesState51Ref} options = {infoFicha?.[4]?.habilidades51?.map(habilidadesObject => ({ label: habilidadesObject.nombre, value: habilidadesObject }))} onChange={(e) => handlePorcentajeFromGlobal(e, 'habilidades51', 4, habilidadesState51Ref, setSelectedHabilidadesState51)}/>
               </div>
               <div className='ficha-modelo__02-tabs__item'>
                   <label htmlFor="contactar_persona">5.2 Comunicación con el cliente</label>
                   {/* <Select value={selectedHabilidadesState52} name='comunicacion_cliente_52' ref={habilidadesState52Ref} options = {habilidadesState52?.map(habilidades => ({ label: habilidades.nombre, value: habilidades }))} onChange={(e) => handleTotalPorcentaje(e, habilidadesState52, setHabilidadesState52, habilidadesPesoTotal, setHabilidadesPesoTotal, [setHabilidadesState51, setHabilidadesState53], habilidadesState52Ref, setSelectedHabilidadesState52)}/> */}
-                  <Select value={selectedHabilidadesState52} name='comunicacion_cliente_52' ref={habilidadesState52Ref} options = {habilidadesState?.habilidades52?.map(habilidadesObject => ({ label: habilidadesObject.nombre, value: habilidadesObject }))} onChange={(e) => handlePorcentaje(e, Object.keys(habilidadesState)?.[2], habilidadesState, setHabilidadesState, habilidadesState52Ref, setSelectedHabilidadesState52)}/>
+                  <Select value={selectedHabilidadesState52} name='comunicacion_cliente_52' ref={habilidadesState52Ref} options = {infoFicha?.[4]?.habilidades52?.map(habilidadesObject => ({ label: habilidadesObject.nombre, value: habilidadesObject }))} onChange={(e) => handlePorcentajeFromGlobal(e, 'habilidades52', 4, habilidadesState52Ref, setSelectedHabilidadesState52)}/>
               </div>
               <div className='ficha-modelo__02-tabs__item'>
                   <label htmlFor="identificacion_gestor">5.3 Amabilidad con el cliente</label>
                   {/* <Select value={selectedHabilidadesState53} name='amabilidad_cliente_53' ref={habilidadesState53Ref} options = {habilidadesState53?.map(habilidades => ({ label: habilidades.nombre, value: habilidades }))} onChange={(e) => handleTotalPorcentaje(e, habilidadesState53, setHabilidadesState53, habilidadesPesoTotal, setHabilidadesPesoTotal, [setHabilidadesState51, setHabilidadesState52], habilidadesState53Ref, setSelectedHabilidadesState53)}/> */}
-                  <Select value={selectedHabilidadesState53} name='amabilidad_cliente_53' ref={habilidadesState53Ref} options = {habilidadesState?.habilidades53?.map(habilidadesObject => ({ label: habilidadesObject.nombre, value: habilidadesObject }))} onChange={(e) => handlePorcentaje(e, Object.keys(habilidadesState)?.[3], habilidadesState, setHabilidadesState, habilidadesState53Ref, setSelectedHabilidadesState53)}/>
+                  <Select value={selectedHabilidadesState53} name='amabilidad_cliente_53' ref={habilidadesState53Ref} options = {infoFicha?.[4]?.habilidades53?.map(habilidadesObject => ({ label: habilidadesObject.nombre, value: habilidadesObject }))} onChange={(e) => handlePorcentajeFromGlobal(e, 'habilidades53', 4, habilidadesState53Ref, setSelectedHabilidadesState53)}/>
               </div>
             </div>
     }
@@ -1121,17 +1268,17 @@ if (!user) return
               <div className='ficha-modelo__02-tabs__item'>
                   <label htmlFor="saludo">6.1 Uso de Herramientas de apoyo</label>
                   {/* <Select value={selectedHerramientasState61} name='uso_herramientas_61' ref={herramientasState61Ref} options = {herramientasState61?.map(herramientas => ({ label: herramientas.nombre, value: herramientas }))} onChange={(e) => handleTotalPorcentaje(e, herramientasState61, setHerramientasState61, herramientasPesoTotal, setHerramientasPesoTotal, [setHerramientasState62], herramientasState61Ref, setSelectedHerramientasState61)}/> */}
-                  <Select value={selectedHerramientasState61} name='uso_herramientas_61' ref={herramientasState61Ref} options = {herramientasState?.herramientas61?.map(herramientasObject => ({ label: herramientasObject.nombre, value: herramientasObject }))} onChange={(e) => handlePorcentaje(e, Object.keys(herramientasState)?.[1], herramientasState, setHerramientasState, herramientasState61Ref, setSelectedHerramientasState61)}/>
+                  <Select value={selectedHerramientasState61} name='uso_herramientas_61' ref={herramientasState61Ref} options = {infoFicha?.[5]?.herramientas61?.map(herramientasObject => ({ label: herramientasObject.nombre, value: herramientasObject }))} onChange={(e) => handlePorcentajeFromGlobal(e, 'herramientas61', 5, herramientasState61Ref, setSelectedHerramientasState61)}/>
               </div>
               <div className='ficha-modelo__02-tabs__item'>
                   <label htmlFor="contactar_persona">6.2 Registro de gestiones</label>
                   {/* <Select value={selectedHerramientasState62} name='registro_gestiones_62' ref={herramientasState62Ref} options = {herramientasState62?.map(herramientas => ({ label: herramientas.nombre, value: herramientas }))} onChange={(e) => handleTotalPorcentaje(e, herramientasState62, setHerramientasState62, herramientasPesoTotal, setHerramientasPesoTotal, [setHerramientasState61], herramientasState62Ref, setSelectedHerramientasState62)}/> */}
-                  <Select value={selectedHerramientasState62} name='registro_gestiones_62' ref={herramientasState62Ref} options = {herramientasState?.herramientas62?.map(herramientasObject => ({ label: herramientasObject.nombre, value: herramientasObject }))} onChange={(e) => handlePorcentaje(e, Object.keys(herramientasState)?.[2], herramientasState, setHerramientasState, herramientasState62Ref, setSelectedHerramientasState62)}/>
+                  <Select value={selectedHerramientasState62} name='registro_gestiones_62' ref={herramientasState62Ref} options = {infoFicha?.[5]?.herramientas62?.map(herramientasObject => ({ label: herramientasObject.nombre, value: herramientasObject }))} onChange={(e) => handlePorcentajeFromGlobal(e, 'herramientas62', 5, herramientasState62Ref, setSelectedHerramientasState62)}/>
               </div>
             </div>
     }
             <div>
-              <textarea className='ficha-modelo__02-textarea' value={observaciones} onChange={e => setObservaciones(e.target.value)} placeholder='Observación'/>
+              <textarea className='ficha-modelo__02-textarea' value={fichaDatos.observaciones} name='observaciones' onChange={handleInput} placeholder='Observación'/>
             </div>
             {/* <span className='ficha-modelo__porcentaje-number'>{porcentaje}%</span> */}
           </div>
