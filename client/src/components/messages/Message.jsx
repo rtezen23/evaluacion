@@ -7,7 +7,7 @@ export const Message = ({handleMessage, message}) => {
     <div className='message-global'>
         <div className='message-container' >
             <AiFillCheckCircle className='check'/>
-            <h3>{message}</h3>
+            <p className='message-text'>{message}</p>
             <div className='message-close' onClick={handleMessage}>Aceptar</div>
         </div>
     </div>

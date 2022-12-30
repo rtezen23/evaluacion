@@ -15,6 +15,8 @@ import { deleteRegister } from '../store/actions/registers.actions';
 import { checkToken } from '../store/actions/user.actions';
 import { FichaEvaluacionMonitor } from './FichaEvaluacionMonitor';
 import { getWeekOfMonth, parseISO, format, isMatch } from 'date-fns';
+import { Message } from '../components/messages/Message';
+import { ErrorMessage } from '../components/messages/ErrorMessage';
 
 const FICHAS_URL = `${import.meta.env.VITE_API_URL}api/v1/fichas/`;
 const BASE_URL = `${import.meta.env.VITE_API_URL}api/v1/base/`;
@@ -138,6 +140,12 @@ const optionsMotivoNoFCR = {
 
 export const FichaEvaluacion = () => {
 
+  const [showMessage, setShowMessage] = useState(false);
+  const [showErrorMessage, setShowErrorMessage] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('')
+
+  const [showFichaForm, setShowFichaForm] = useState(true)
+
   const [tab, setTab] = useState('apertura')
 
   const isAuth = useSelector(state => state.user.isAuth);
@@ -149,7 +157,7 @@ export const FichaEvaluacion = () => {
 	const [segundos, setSegundos] = useState(0);
 	const [minutos, setMinutos] = useState(0);
 	const [assigned, setAssigned] = useState([]);
-  const [porcentaje, setPorcentaje] = useState(0)
+  const [porcentaje, setPorcentaje] = useState(0);
   const [infoFicha, setInfoFicha] = useState([]);
 
   const dispatch = useDispatch();
@@ -226,7 +234,6 @@ export const FichaEvaluacion = () => {
 
   const [herramientasPesoTotal, setHerramientasPesoTotal] = useState([]);
 
-
   // useRefs
   const aperturaState11Ref = useRef();
   const aperturaState12Ref = useRef();
@@ -253,14 +260,13 @@ export const FichaEvaluacion = () => {
 
   const [ fichaDatos, setFichaDatos ] = useState ({
         id_evaluacion: '',
-        cartera: '', 
+        cartera: '',
         tramo: '',
         mes_llamada: '',
         fecha_llamada: '',
         semana_llamada: 0,
         telefono: '',
         dni_cliente: '',
-        // cuenta_cliente: '',
         resultado: '',
         hora_llamada: '',
         tmo_segundos: 0,
@@ -295,101 +301,20 @@ export const FichaEvaluacion = () => {
         registro_gestiones_62: '',
         calificacion_final: '',
         observaciones: '',
-        // supervisor: '',
-        // tramo_estandar: '',
         tipo_ficha: '',
   })
 
-  // ====================== OLD WAY TO GET NEW PESOS AND HANDLE PERCENT===========================
-  //==============================================================================================
-  // const setNewPesos = (e, state, setState, total_peso, set_total_peso, allObjects, parentObject) => {
-  //   // Restar % actual al % total
-  //   const cumpleItem = state.find(item => item.nombre === 'Sí cumple');
-  //   // set_total_peso(prevState => prevState - cumpleItem.peso)
-  //   // subtracting peso to porcentaje if there is a 'Sí cumple' option selected
-  //   for (const key in parentObject) {
-  //       parentObject[key].forEach(item => {
-  //         if (item.isSelected && item.nombre === 'Sí cumple') {
-  //           setPorcentaje( prevPorcentaje => prevPorcentaje - item.peso);
-  //         }
-  //       })
-  //   }
-    
-  //   // Subtracting peso from current total_peso to get new values
-  //   const newPesoReferencia = total_peso - cumpleItem.peso;
-  //   // Setting new peso and  peso_percent
-  //   for (let i = 0; i < allObjects.length; i++) {
-  //     allObjects[i](prevState => {
-  //       return prevState.map(item => {
-  //         return {...item, peso_percent: Math.round(((item.peso * 100 / newPesoReferencia) + Number.EPSILON) * 100) / 100}
-  //       })
-  //     })
-  //   }
-  //   for (let i = 0; i < allObjects.length; i++) {
-  //     allObjects[i](prevState => {
-  //       return prevState.map(item => {
-  //         return {...item, peso: Math.round(((total_peso * item.peso_percent / 100) + Number.EPSILON) * 100) / 100}
-  //       })
-  //     })
-  //   }
-    
-
-  //   // allObjects.forEach(setState => {
-  //   //   setState(prevState => {
-  //   //     return prevState.map(item => {
-  //   //       return {...item, peso_percent: Math.round(((item.peso * 100 / newPesoReferencia) + Number.EPSILON) * 100) / 100}
-  //   //     })
-  //   //   });
-  //   //   setState(prevState => {
-  //   //     return prevState.map(item => {
-  //   //       return {...item, peso: Math.round(((total_peso * item.peso_percent / 100) + Number.EPSILON) * 100) / 100}
-  //   //     })
-  //   //   });
-  //   // })
-
-  //   // adding new peso to porcentaje if there is a 'Sí cumple' option selected
-  //   for (const key in parentObject) {
-  //     parentObject[key].forEach(item => {
-  //       if (item.isSelected && item.nombre === 'Sí cumple') {
-  //         setPorcentaje( prevPorcentaje => prevPorcentaje + item.peso);
-  //       }
-  //     })
-  //   }
-
-  // }
-
-  // const handleTotalPorcentaje = (e, state, setState, total_peso, set_total_peso, setObjects, ref, setSelected, parentObject) => {
-  //   setSelected(e)
-  //   handleSelectOption(e, ref)
-  //   if (e.value.nombre === 'No aplica') {
-  //     setNewPesos(e, state, setState, total_peso, set_total_peso, setObjects, parentObject);
-  //   }
-  //   else {
-  //     // Recorremos en array de objetos para restar la cantidad si habia un elemento seleccionado antes
-  //     state.forEach(item => {
-  //       if (item.isSelected) {
-  //         // const pesoDecimal = total_peso * item.peso_percent / 100;
-  //         // const peso = Math.round(pesoDecimal);
-  //         setPorcentaje( prevPorcentaje => prevPorcentaje - item.peso);
-  //       }
-  //     })
-  //     // Sumamos la cantidad correspondiente del elemento seleccionado al % total
-  //     // setPorcentaje( prevPorcentaje => {
-  //     //   const pesoDecimal = total_peso * e.value.peso_percent / 100;
-  //     //   const peso = Math.round(pesoDecimal);
-  //     //   return prevPorcentaje +  e.value.peso
-  //     // })
-  //     setPorcentaje( prevPorcentaje => prevPorcentaje +  e.value.peso)
-  //   }
-
-  //   // Recorremos el arreglo de objetos para asignar el nuevo elemento seleccionado dependiendo de la opcion elegida
-  //   setState(prevState => prevState.map(item => {return{...item, isSelected: item.nombre === e.value.nombre}}));
-
-  // }
-
   const [tipoGestionSelect, setTipoGestionSelect] = useState('')
 
-  console.log(tipoGestionSelect)
+  const handleMessage = () => {
+    setShowMessage(false)
+    window.location.reload();
+  }
+  
+  const handleErrorMessage = () => {
+    setShowErrorMessage(false)
+  }
+
   const handleSelectOption = (data, ref) => {
     setFichaDatos(prevFichaDatos => {
       return {
@@ -465,15 +390,6 @@ export const FichaEvaluacion = () => {
   })
   }
   
-  const setInfoData = () => {
-    // setAperturaState(infoFicha[0]);
-    // setIndagacionState(infoFicha[1]);
-    // setManejoState(infoFicha[2]);
-    // setCierreState(infoFicha[3]);
-    // setHabilidadesState(infoFicha[4]);
-    // setHerramientasState(infoFicha[5]);
-  }
-
   const [ datosBase, setDatosBase ] = useState([]);
   const [ infoCartera, setInfoCartera ] = useState({
     idcartera: '',
@@ -488,18 +404,17 @@ export const FichaEvaluacion = () => {
   useEffect(() => {
    
 		if (!isAuth) dispatch(checkToken());
-if (!user) return
-
+    if (!user) return
     setStartTime(new Date());
-    
-
     getWeekOfMonth(new Date(), { weekStartsOn: 1 })
 
     // REGISTROS DE LA IMPORTACION QUE CORRESPONDEN AL ASESOR
     axios.get(BASE_URL+user?.usuario)
     .then(res2 => {
       if (!res2.data.userBase) {
-        alert('No cuenta con fichas actualmente');
+        setErrorMessage('No cuenta con fichas actualmente');
+        setShowErrorMessage(true);
+        setShowFichaForm(false);
         if (user.cargo === 'admin') {
           navigate('/table');
         }
@@ -525,6 +440,7 @@ if (!user) return
   
     let timer;
     useEffect(()=> {
+      
         timer = setInterval(() => {
           setSegundos(prevSegundos => prevSegundos + 1);
           // not recognizing segundos
@@ -533,13 +449,10 @@ if (!user) return
             setSegundos(0);
           }
         }, 1000);
-    
         return () => clearInterval(timer)
-    },[])
-  
-  useEffect(()=>{
-    setInfoData()
-  },[infoFicha])
+    },[segundos])
+
+    console.log('test')
 
   useEffect(()=>{
     porcentaje
@@ -622,7 +535,7 @@ if (!user) return
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
+    const endTime = new Date();
     fichaDatos.audio_nombre = audioRef.current?.files[0]?.name;
 
     let isThereAnEmpty;
@@ -652,7 +565,6 @@ if (!user) return
           audio_nombre,
           ...currentFields
       } = fichaDatos;
-      console.log('Opciones con alerta SI:', currentFields)
       isThereAnEmpty = handleEmptyFields(currentFields);
     } else {
       const {
@@ -679,11 +591,10 @@ if (!user) return
         calificacion_final,
         ...currentFields
     } = fichaDatos;
-    console.log('Opciones con alerta NO:', currentFields)
     isThereAnEmpty = handleEmptyFields(currentFields);
     }
 
-    const endTime = new Date();
+    
 
     let difference = endTime.getTime() - startTime.getTime();
 
@@ -720,11 +631,12 @@ if (!user) return
     const soloFecha = fechaActual.slice(0, comaIndex);
     fichaDatos.fecha_monitoreo = soloFecha;
     fichaDatos.nombre_monitor = user.usuario;
-    fichaDatos.rol= user.cargo;
+    fichaDatos.rol = user.cargo;
     // fichaDatos.alerta = fichaDatos.alerta ? 'SI' : 'NO'
     fichaDatos.hora_inicio = startTime.getHours() + ":" + `${startTime.getMinutes().toString().length===1 ? `0${startTime.getMinutes()}` : startTime.getMinutes()}` + ":" + `${startTime.getSeconds().toString().length===1 ? `0${startTime.getSeconds()}` : startTime.getSeconds()}`;
     fichaDatos.hora_fin = endTime.getHours() + ":" + `${endTime.getMinutes().toString().length===1 ? `0${endTime.getMinutes()}` : endTime.getMinutes()}` + ":" + `${endTime.getSeconds().toString().length===1 ? `0${endTime.getSeconds()}` : endTime.getSeconds()}`;
-    fichaDatos.duracion_monitoreo = (minuteDifference * 60) + Math.round(difference);
+    // fichaDatos.duracion_monitoreo = (minuteDifference * 60) + Math.round(difference);
+    fichaDatos.duracion_monitoreo = minutos * 60 + segundos;
     // fichaDatos.observaciones = observaciones;
     fichaDatos.tipo_ficha = assigned.FICHA;
     // fichaDatos.duracion_monitoreo = minutos * 60 +  segundos + 1;
@@ -733,14 +645,17 @@ if (!user) return
       axios.post(FICHAS_URL, fichaDatos)
       .then(res => {
         dispatch(deleteRegister(assigned?.id));
-          alert('Ficha agregada, procediendo a la siguiente');
-          window.location.reload();
+          setShowMessage(true);
       })
       .catch(err =>{
-        alert('Error al agregar')
+        setErrorMessage('Error al agregar')
+        setShowErrorMessage(true);
         console.log(err)
       })
-    } else alert('Complete todos los campos')
+    } else {
+      setErrorMessage('Complete todos los campos')
+      setShowErrorMessage(true);
+    }
 
   }
   // audio
@@ -1039,15 +954,18 @@ if (!user) return
   
   return (
     <section className='ficha-evaluacion'>
-      
-      <form className='ficha-evaluacion__form' onSubmit={handleSubmit}>
+      { showMessage && <Message handleMessage={handleMessage} message='Ficha agregada, procediendo a la siguiente'/> }
+      { showErrorMessage && <ErrorMessage handleErrorMessage={handleErrorMessage} message={errorMessage}/> }
+      {
+        showFichaForm && (
+          <form className='ficha-evaluacion__form' onSubmit={handleSubmit}>
         {
           !user ? <p>Cargando...</p>
           : <div className='ficha-modelo__01-main'>
           <h2 className='ficha-modelo__01-main__title'>EVALUACIÓN {assigned?.FICHA}</h2>
           <p className='ficha-modelo__01-main__time'>
                 {/* {horas < 10 ? '0' + horas : horas}: */}
-                {/* {minutos < 10 ? '0' + minutos : minutos}: */}
+                {minutos < 10 ? '0' + minutos : minutos}:
                 {segundos < 10 ? '0' + segundos : segundos}
           </p>
 
@@ -1284,6 +1202,8 @@ if (!user) return
           </div>
         </div>
       </form>
+        )
+      }
       {
         user && <FichaEvaluacionMonitor monitor={user.usuario} />
       }

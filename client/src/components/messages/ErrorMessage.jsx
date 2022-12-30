@@ -8,7 +8,7 @@ export const ErrorMessage = ({handleErrorMessage, message}) => {
     <div className='message-global'>
         <div className='message-container-error' >
             <VscError className='wrong'/>
-            <h3>{message}</h3>
+            <p className='message-text-error'>{message}</p>
             <div className='message-close-error' onClick={handleErrorMessage}>Aceptar</div>
         </div>
     </div>
